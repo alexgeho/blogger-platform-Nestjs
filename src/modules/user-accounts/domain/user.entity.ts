@@ -1,3 +1,9 @@
+import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument, Model } from 'mongoose';
+import { Name, NameSchema } from './name.schema';
+import { CreateUserDomainDto } from '../dto/user-dto';
+import { UpdateUserDto } from './dto/create-user.domain.dto';
+
 //флаг timestemp автоматичеки добавляет поля upatedAt и createdAt
 /**
  * User Entity Schema
@@ -26,7 +32,7 @@ export class User {
    * @type {string}
    * @required
    */
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, min: 5, required: true })
   email: string;
 
   /**
@@ -37,7 +43,7 @@ export class User {
   @Prop({ type: Boolean, required: true, default: false })
   isEmailConfirmed: boolean;
 
-  // @Prop(NameSchema) this variant from doc. doesn't make validation for inner object
+  // @Prop(NameSchema) this variant from docdoesn't make validation for inner object
   @Prop({ type: NameSchema })
   name: Name;
 
@@ -57,6 +63,22 @@ export class User {
   @Prop({ type: Date, nullable: true })
   deletedAt: Date | null;
 
+  /**
+   * Virtual property to get the stringified ObjectId
+   * @returns {string} The string representation of the ID
+   * если ипсльзуете по всей системе шв айди как string, можете юзать, если id
+   */
+  get id() {
+    // @ts-ignore
+    return this._id.toString();
+  }
+
+  /**
+   * Factory method to create a User instance
+   * @param {CreateUserDto} dto - The data transfer object for user creation
+   * @returns {UserDocument} The created user document
+   * DDD started: как создать сущность, чтобы она не нарушала бизнес-правила? Делегируем это создание статическому методу
+   */
   static createInstance(dto: CreateUserDomainDto): UserDocument {
     const user = new this();
     user.email = dto.email;
@@ -76,7 +98,7 @@ export class User {
    * Marks the user as deleted
    * Throws an error if already deleted
    * @throws {Error} If the entity is already deleted
-   * DDD continue: инкапсуляция (вызываем методы, которые меняют состояние\св-ва) объектов согласно правилам этого объекта
+   * DDD сontinue: инкапсуляция (вызываем методы, которые меняют состояние\св-ва) объектов согласно правилам этого объекта
    */
   makeDeleted() {
     if (this.deletedAt !== null) {
@@ -89,13 +111,13 @@ export class User {
    * Updates the user instance with new data
    * Resets email confirmation if email is updated
    * @param {UpdateUserDto} dto - The data transfer object for user updates
-   * DDD continue: инкапсуляция (вызываем методы, которые меняют состояние\св-ва) объектов согласно правилам этого объекта
+   * DDD сontinue: инкапсуляция (вызываем методы, которые меняют состояние\св-ва) объектов согласно правилам этого объекта
    */
   update(dto: UpdateUserDto) {
     if (dto.email !== this.email) {
       this.isEmailConfirmed = false;
+      this.email = dto.email;
     }
-    this.email = dto.email;
   }
 }
 
