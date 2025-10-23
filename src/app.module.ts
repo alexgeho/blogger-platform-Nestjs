@@ -5,10 +5,11 @@ import { UserAccountsModule } from './modules/user-accounts/user-accounts.module
 import { MongooseModule, InjectConnection } from '@nestjs/mongoose';
 import mongoose, { Connection } from 'mongoose';
 
+
+
 @Module({
   imports: [
-    MongooseModule.forRoot(
-      'mongodb+srv://user2:rlTZYUNTj0234PGu@cluster0.zgjfrlf.mongodb.net/NestBloggerPlatform?retryWrites=true&w=majority&appName=Cluster0',
+    MongooseModule.forRoot(ENV.MONGODB_URI, {}
     ),
     UserAccountsModule,
   ],
