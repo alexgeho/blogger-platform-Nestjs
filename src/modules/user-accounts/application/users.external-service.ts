@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserModelType } from '../../../../../Downloads/ed-back-lessons-bloggers-nest-main/src/modules/user-accounts/domain/user.entity';
-import { UsersRepository } from '../../../../../Downloads/ed-back-lessons-bloggers-nest-main/src/modules/user-accounts/infrastructure/users.repository';
+import { User } from '../domain/user.entity';
+import type { UserModelType } from '../domain/user.entity';
+import { UsersRepository } from '../infrastructure/user.repository';
 
 @Injectable()
 export class UsersExternalService {

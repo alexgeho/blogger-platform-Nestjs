@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserModelType } from '../../../../../Downloads/ed-back-lessons-bloggers-nest-main/src/modules/user-accounts/domain/user.entity';
-import { CreateUserDto, UpdateUserDto } from '../../../../../Downloads/ed-back-lessons-bloggers-nest-main/src/modules/user-accounts/dto/create-user.dto';
+import { User } from '../domain/user.entity';
+import type { UserModelType } from '../domain/user.entity';
+import {
+  CreateUserDto,
+  UpdateUserDto,
+} from '../domain/dto/create-user.domain.dto';
 import bcrypt from 'bcrypt';
-import { UsersRepository } from '../../../../../Downloads/ed-back-lessons-bloggers-nest-main/src/modules/user-accounts/infrastructure/users.repository';
+import { UsersRepository } from '../infrastructure/user.repository';
 
 @Injectable()
 export class UsersService {
@@ -28,6 +32,7 @@ export class UsersService {
 
     return user._id.toString();
   }
+
   async updateUser(id: string, dto: UpdateUserDto): Promise<string> {
     const user = await this.usersRepository.findOrNotFoundFail(id);
 
