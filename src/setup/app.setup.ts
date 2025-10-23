@@ -1,7 +1,7 @@
-import { pipesSetup } from '../../../Downloads/ed-back-lessons-bloggers-nest-main/src/setup/pipes.setup';
+import { pipesSetup } from './pipes.setup';
 import { INestApplication } from '@nestjs/common';
-import { globalPrefixSetup } from '../../../Downloads/ed-back-lessons-bloggers-nest-main/src/setup/global-prefix.setup';
-import { swaggerSetup } from '../../../Downloads/ed-back-lessons-bloggers-nest-main/src/setup/swagger.setup';
+import { globalPrefixSetup } from './global-prefix.setup';
+import { swaggerSetup } from './swagger.setup';
 
 export function appSetup(app: INestApplication) {
   pipesSetup(app);

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { UsersExternalQueryRepository } from '../../../../Downloads/ed-back-lessons-bloggers-nest-main/src/modules/user-accounts/infrastructure/external-query/users.external-query-repository';
-import { UsersExternalService } from '../../../../Downloads/ed-back-lessons-bloggers-nest-main/src/modules/user-accounts/application/users.external-service';
+import { UsersExternalQueryRepository } from '../user-accounts/infrastructure/external-query/users.external-query-repository';
+import { UsersExternalService } from '../user-accounts/application/users.external-service';
 
 @Injectable()
 export class BlogsService {
@@ -10,6 +10,7 @@ export class BlogsService {
   ) {
     console.log('BlogsService crated');
   }
+
   async hello(id: string) {
     const user = await this.usersExternalRepository.getByIdOrNotFoundFail(id);
 

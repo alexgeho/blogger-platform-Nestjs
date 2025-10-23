@@ -1,8 +1,8 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
 import { Name, NameSchema } from './name.schema';
-import { CreateUserDomainDto } from '../dto/user-dto';
-import { UpdateUserDto } from './dto/create-user.domain.dto';
+import { CreateUserDomainDto } from './dto/create-user.domain.dto';
+import { UpdateUserDto } from '../dto/create-user.dto';
 
 //флаг timestemp автоматичеки добавляет поля upatedAt и createdAt
 /**
@@ -63,15 +63,7 @@ export class User {
   @Prop({ type: Date, nullable: true })
   deletedAt: Date | null;
 
-  /**
-   * Virtual property to get the stringified ObjectId
-   * @returns {string} The string representation of the ID
-   * если ипсльзуете по всей системе шв айди как string, можете юзать, если id
-   */
-  get id() {
-    // @ts-ignore
-    return this._id.toString();
-  }
+
 
   /**
    * Factory method to create a User instance

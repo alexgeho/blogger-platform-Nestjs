@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { UserAccountsModule } from '../../../../Downloads/ed-back-lessons-bloggers-nest-main/src/modules/user-accounts/user-accounts.module';
 import { BlogsService } from './blogs.service';
+import { UserAccountsModule } from '../user-accounts/api/user-accounts.module';
 
 //тут регистрируем провайдеры всех сущностей блоггерской платформы (blogs, posts, comments, etc...)
 @Module({

@@ -1,4 +1,4 @@
-import { UserDocument } from '../../../../../../../ed-back-lessons-bloggers-nest-main/src/modules/user-accounts/domain/user.entity';
+import { UserDocument } from '../../../domain/user.entity';
 
 export class UserExternalDto {
   id: string;

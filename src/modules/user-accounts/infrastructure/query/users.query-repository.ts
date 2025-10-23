@@ -1,6 +1,6 @@
 import { User } from '../../domain/user.entity';
+import type { UserDocument } from '../../domain/user.entity';
 import type { UserModelType } from '../../domain/user.entity';
-
 import { InjectModel } from '@nestjs/mongoose';
 import { UserViewDto } from '../../api/view-dto/users.view-dto';
 import { Injectable, NotFoundException } from '@nestjs/common';
@@ -56,7 +56,9 @@ export class UsersQueryRepository {
 
     const totalCount = await this.UserModel.countDocuments(filter);
 
-    const items = users.map(UserViewDto.mapToView);
+    const items = users.map((user) =>
+      UserViewDto.mapToView(user as UserDocument),
+    );
 
     return PaginatedViewDto.mapToView({
       items,
