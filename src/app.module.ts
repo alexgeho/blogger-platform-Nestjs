@@ -1,32 +1,32 @@
-import { Module, OnModuleInit } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserAccountsModule } from './modules/user-accounts/user-accounts.module';
-import { MongooseModule, InjectConnection } from '@nestjs/mongoose';
-import mongoose, { Connection } from 'mongoose';
-
-
+import { UserAccountsModule } from './modules/user-accounts/user-accounts.module'; // (Assuming correct path)
+import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(ENV.MONGODB_URI, {}
-    ),
+    // 1. Configure ConfigModule to load .env file
+    ConfigModule.forRoot({
+      isGlobal: true, // Makes ConfigService available everywhere
+    }),
+
+    // 2. USE MongooseModule.forRootAsync() to inject the configuration service
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule], // Make sure ConfigModule is imported
+      useFactory: (configService: ConfigService) => ({
+        // Get the MONGO_URL from the .env file using the ConfigService
+        uri: configService.get<string>('MONGO_URL'),
+      }),
+      inject: [ConfigService], // Inject ConfigService into the factory function
+    }),
+
     UserAccountsModule,
+    // (Remove the extra comma here if one exists)
+    // ... other modules
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements OnModuleInit {
-  constructor(@InjectConnection() private readonly connection: Connection) {}
-
-  onModuleInit() {
-    if (this.connection.readyState === mongoose.ConnectionStates.connected) {
-      console.log('✅ Connected to MongoDB');
-    } else {
-      console.log(
-        '❌ MongoDB not connected. State:',
-        this.connection.readyState,
-      );
-    }
-  }
-}
+export class AppModule {}
