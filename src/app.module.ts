@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { UserAccountsModule } from './modules/user-accounts/user-accounts.module'; // (Assuming correct path)
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TestingModule } from './modules/testing/testing.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
 
     UserAccountsModule,
+    TestingModule,
     // (Remove the extra comma here if one exists)
     // ... other modules
   ],
