@@ -12,6 +12,8 @@ import {
 import { UsersQueryRepository } from '../user-accounts/infrastructure/query/users.query-repository';
 import { BlogsService } from './blogs.service';
 import { PaginatedViewDto } from '../../core/dto/base.paginated.view-dto';
+import { BlogViewDto } from './view-dto/blogs.view-dto';
+import { GetBlogsQueryParams } from './api/input-dto/get-blogs-query-params.input-dto';
 
 @Controller('blogs')
 export class BlogsController {

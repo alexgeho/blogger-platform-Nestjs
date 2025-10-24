@@ -1,21 +1,31 @@
+import { BlogDocument } from '../domain/blog.entity';
 
-export class UserViewDto {
+/**
+ * View DTO for Blog
+ * Used to shape the data returned to clients (no sensitive info)
+ */
+export class BlogViewDto {
   id: string;
-  login: string;
-  email: string;
+  name: string;
+  description: string;
+  websiteUrl: string;
   createdAt: Date;
-  firstName: string;
-  lastName: string | null;
+  isMembership: boolean;
 
-  static mapToView(user: UserDocument): UserViewDto {
-    const dto = new UserViewDto();
+  /**
+   * Converts Blog document to BlogViewDto
+   * @param {BlogDocument} blog
+   * @returns {BlogViewDto}
+   */
+  static mapToView(blog: BlogDocument): BlogViewDto {
+    const dto = new BlogViewDto();
 
-    dto.email = user.email;
-    dto.login = user.login;
-    dto.id = user._id.toString();
-    dto.createdAt = user.createdAt;
-    dto.firstName = user.name.firstName;
-    dto.lastName = user.name.lastName;
+    dto.id = blog._id.toString();
+    dto.name = blog.name;
+    dto.description = blog.description;
+    dto.websiteUrl = blog.websiteUrl;
+    dto.createdAt = blog.createdAt ?? new Date();
+    dto.isMembership = blog.isMembership;
 
     return dto;
   }
