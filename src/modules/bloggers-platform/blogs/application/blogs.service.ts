@@ -8,6 +8,7 @@ import { BlogsRepository } from '../infrastructure/blogs.repository';
 import { CreatePostThroughBlogDto } from '../dto/create-post-through-blog.dto';
 import { PostsService } from '../../posts/application/posts.service';
 import { PostsViewDto } from '../../posts/view-dto/posts.view-dto';
+import { PostsQueryRepository } from '../../posts/infrastructure/query/posts.query-repository';
 
 @Injectable()
 export class BlogsService {
@@ -16,10 +17,10 @@ export class BlogsService {
     private BlogModel: BlogModelType,
     private blogsRepository: BlogsRepository,
     private postsService: PostsService,
+    private postsQueryRepository: PostsQueryRepository,
   ) {}
 
   async createBlog(dto: CreateBlogDto): Promise<string> {
-    // 1️⃣ Подготавливаем доменный DTO
     const domainDto = new CreateBlogDomainDto();
     domainDto.name = dto.name;
     domainDto.description = dto.description;
@@ -41,8 +42,14 @@ export class BlogsService {
       throw new NotFoundException(`Blog with id ${id} not found`);
     }
 
-    const newPost = await this.postsService.CreatePostThroughBlogDto(body, id);
+    const newPostId = await this.postsService.CreatePostThroughBlogDto(body, id);
+    console.log('🟢 Created Post ID:', newPostId);
 
-    return newPost;
+    const postView =
+      await this.postsQueryRepository.getByIdOrNotFoundFail(newPostId);
+
+    console.log('🟣 PostView:', postView);
+
+    return postView; // 👈 Вот это обязательный return!
   }
 }

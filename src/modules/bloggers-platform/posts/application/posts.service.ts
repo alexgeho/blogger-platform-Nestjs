@@ -37,8 +37,7 @@ export class PostsService {
   async CreatePostThroughBlogDto(
     dto: CreatePostThroughBlogDto,
     id: string,
-  ): Promise<PostsViewDto> {
-
+  ): Promise<string> {
     const blog = await this.blogsRepository.findById(id);
 
     if (!blog) {
@@ -48,8 +47,9 @@ export class PostsService {
     const domainDto = new CreatePostDomainDto(dto, id, blog.name);
 
     const post = this.PostModel.createInstance(domainDto);
+
     const createdPost = await this.postsRepository.save(post);
 
-    return createdPost._id.toString();
+    return createdPost._id.toString(); // ✅ только id
   }
 }
