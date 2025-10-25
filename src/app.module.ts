@@ -5,6 +5,7 @@ import { UserAccountsModule } from './modules/user-accounts/user-accounts.module
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TestingModule } from './modules/testing/testing.module';
+import { BloggersPlatformModule } from './modules/bloggers-platform/bloggers-platform.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { TestingModule } from './modules/testing/testing.module';
 
     UserAccountsModule,
     TestingModule,
+    BloggersPlatformModule,
     // (Remove the extra comma here if one exists)
     // ... other modules
   ],

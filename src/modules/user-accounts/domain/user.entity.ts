@@ -92,12 +92,12 @@ export class User {
    * @throws {Error} If the entity is already deleted
    * DDD сontinue: инкапсуляция (вызываем методы, которые меняют состояние\св-ва) объектов согласно правилам этого объекта
    */
-  makeDeleted() {
-    if (this.deletedAt !== null) {
-      throw new Error('Entity already deleted');
-    }
-    this.deletedAt = new Date();
-  }
+  // makeDeleted() {
+  //   if (this.deletedAt !== null) {
+  //     throw new Error('Entity already deleted');
+  //   }
+  //   this.deletedAt = new Date();
+  // }
 
   /**
    * Updates the user instance with new data

@@ -9,12 +9,12 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BlogsService } from '../application/blogs.service';
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 import { BlogViewDto } from '../view-dto/blogs.view-dto';
 import { GetBlogsQueryParams } from './input-dto/get-blogs-query-params.input-dto';
 import { BlogsQueryRepository } from '../infrastructure/query/blogs.query-repository';
-import { CreateBlogDomainDto } from '../domain/dto/create-blog.domain.dto';
 import { CreateBlogDto } from '../dto/create-blog.dto';
 
 @Controller('blogs')
@@ -31,12 +31,20 @@ export class BlogsController {
     return this.blogsQueryRepository.getAll(query);
   }
 
+  @Get(':id')
+  async getById(@Param('id') id: string): Promise<BlogViewDto> {
+    return this.blogsQueryRepository.getByIdOrNotFoundFail(id);
+  }
+
   @Post()
-  async createBlog(
-    @Body() body: CreateBlogDto): Promise<BlogViewDto> {
+  @ApiResponse({
+    status: 201,
+    description: 'Returns the newly created blog',
+    type: BlogViewDto, // <-- тут магия
+  })
+  async createBlog(@Body() body: CreateBlogDto): Promise<BlogViewDto> {
     const blogId = await this.blogsService.createBlog(body);
 
     return this.blogsQueryRepository.getByIdOrNotFoundFail(blogId);
-
-
   }
+}
