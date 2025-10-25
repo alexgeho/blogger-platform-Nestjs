@@ -13,7 +13,8 @@ export class UsersQueryRepository {
   constructor(
     @InjectModel(User.name)
     private UserModel: UserModelType,
-  ) {}
+  ) {
+  }
 
   async getByIdOrNotFoundFail(id: string): Promise<UserViewDto> {
     const user = await this.UserModel.findOne({
