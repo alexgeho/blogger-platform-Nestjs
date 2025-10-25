@@ -1,28 +1,21 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Post,
-  Query,
-} from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { ApiResponse } from '@nestjs/swagger';
 import { BlogsService } from '../application/blogs.service';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { BlogViewDto } from '../view-dto/blogs.view-dto';
 import { GetBlogsQueryParams } from './input-dto/get-blogs-query-params.input-dto';
 import { BlogsQueryRepository } from '../infrastructure/query/blogs.query-repository';
 import { CreateBlogDto } from '../dto/create-blog.dto';
+import { CreatePostThroughBlogDto } from '../dto/create-post-through-blog.dto';
+import { PostsViewDto } from '../../posts/view-dto/posts.view-dto';
 
 @Controller('blogs')
 export class BlogsController {
   constructor(
     private blogsQueryRepository: BlogsQueryRepository,
     private blogsService: BlogsService,
-  ) {}
+  ) {
+  }
 
   @Get()
   async getAll(
@@ -46,5 +39,18 @@ export class BlogsController {
     const blogId = await this.blogsService.createBlog(body);
 
     return this.blogsQueryRepository.getByIdOrNotFoundFail(blogId);
+  }
+
+  @Post(':id/posts')
+  @ApiResponse({
+    status: 201,
+    description: 'Returns the newly created post for blog',
+    type: PostsViewDto, // <-- тут магия
+  })
+  async createPostThroughBlog(
+    @Param('id') id: string,
+    @Body() body: CreatePostThroughBlogDto,
+  ): Promise<PostsViewDto> {
+    return this.blogsService.createPostThroughBlog(body, id);
   }
 }
