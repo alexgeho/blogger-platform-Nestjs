@@ -31,22 +31,20 @@ export class PostsViewDto {
   static mapToView(post: PostDocument): PostsViewDto {
     const dto = new PostsViewDto();
 
-    const plain = post.toObject() as Post; // ✅ теперь TS уверен, что это чистый Post
-
-    dto.id = plain._id.toString();
-    dto.title = plain.title;
-    dto.shortDescription = plain.shortDescription;
-    dto.content = plain.content;
-    dto.blogId = plain.blogId;
-    dto.blogName = plain.blogName;
-    dto.createdAt = plain.createdAt?.toISOString() ?? new Date().toISOString();
+    dto.id = post._id.toString();
+    dto.title = post.title;
+    dto.shortDescription = post.shortDescription;
+    dto.content = post.content;
+    dto.blogId = post.blogId;
+    dto.blogName = post.blogName;
+    dto.createdAt = post.createdAt;
 
     dto.extendedLikesInfo = {
-      likesCount: plain.extendedLikesInfo?.likesCount ?? 0,
-      dislikesCount: plain.extendedLikesInfo?.dislikesCount ?? 0,
-      myStatus: plain.extendedLikesInfo?.myStatus ?? 'None',
+      likesCount: post.extendedLikesInfo?.likesCount ?? 0,
+      dislikesCount: post.extendedLikesInfo?.dislikesCount ?? 0,
+      myStatus: post.extendedLikesInfo?.myStatus ?? 'None',
       newestLikes:
-        plain.extendedLikesInfo?.newestLikes?.map(like => ({
+        post.extendedLikesInfo?.newestLikes?.map((like) => ({
           addedAt: like.addedAt?.toISOString() ?? new Date().toISOString(),
           userId: like.userId,
           login: like.login,
@@ -56,4 +54,7 @@ export class PostsViewDto {
     return dto;
   }
 
+  static mapManyToView(posts: PostDocument[]): PostsViewDto[] {
+    return posts.map((p) => PostsViewDto.mapToView(p));
+  }
 }

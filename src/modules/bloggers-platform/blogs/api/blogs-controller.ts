@@ -29,6 +29,16 @@ export class BlogsController {
     return this.blogsQueryRepository.getByIdOrNotFoundFail(id);
   }
 
+  @Get(':id/posts')
+  @ApiResponse({
+    status: 200,
+    description: 'Return all posts of blog',
+    type: [PostsViewDto],
+  })
+  async getPostsOfBlog(@Param('id') id: string): Promise<PostsViewDto[]> {
+    return this.blogsService.getPostsOfBlog(id);
+  }
+
   @Post()
   @ApiResponse({
     status: 201,

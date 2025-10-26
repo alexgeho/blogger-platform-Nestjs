@@ -20,6 +20,18 @@ export class BlogsService {
     private postsQueryRepository: PostsQueryRepository,
   ) {}
 
+  async getPostsOfBlog(blogId: string): Promise<PostsViewDto[]> {
+    const blog = await this.blogsRepository.findById(blogId);
+    if (!blog) {
+      throw new NotFoundException(`Blog with id ${blogId} not found`);
+    }
+
+    const posts = await this.postsQueryRepository.getAllByBlogId(blogId);
+    return posts;
+
+
+  }
+
   async createBlog(dto: CreateBlogDto): Promise<string> {
     const domainDto = new CreateBlogDomainDto();
     domainDto.name = dto.name;
@@ -42,13 +54,14 @@ export class BlogsService {
       throw new NotFoundException(`Blog with id ${id} not found`);
     }
 
-    const newPostId = await this.postsService.CreatePostThroughBlogDto(body, id);
-    console.log('🟢 Created Post ID:', newPostId);
+    const newPostId = await this.postsService.CreatePostThroughBlogDto(
+      body,
+      id,
+    );
 
     const postView =
       await this.postsQueryRepository.getByIdOrNotFoundFail(newPostId);
 
-    console.log('🟣 PostView:', postView);
 
     return postView; // 👈 Вот это обязательный return!
   }
