@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogDocument } from '../../domain/blog.entity';
+import { Blog } from '../../domain/blog.entity';
 import type { BlogModelType } from '../../domain/blog.entity';
 import { BlogViewDto } from '../../view-dto/blogs.view-dto';
 import { PaginatedViewDto } from '../../../../../core/dto/base.paginated.view-dto';
@@ -19,10 +19,7 @@ export class BlogsQueryRepository {
       _id: id,
       deletedAt: null,
     });
-
-    if (!blog) {
-      throw new NotFoundException('blog not found');
-    }
+    if (!blog) throw new NotFoundException('Blog not found');
 
     return BlogViewDto.mapToView(blog);
   }
@@ -30,23 +27,7 @@ export class BlogsQueryRepository {
   async getAll(
     query: GetBlogsQueryParams,
   ): Promise<PaginatedViewDto<BlogViewDto[]>> {
-    const filter: FilterQuery<Blog> = {
-      deletedAt: null,
-    };
-
-    if (query.searchLoginTerm) {
-      filter.$or = filter.$or || [];
-      filter.$or.push({
-        login: { $regex: query.searchLoginTerm, $options: 'i' },
-      });
-    }
-
-    if (query.searchEmailTerm) {
-      filter.$or = filter.$or || [];
-      filter.$or.push({
-        email: { $regex: query.searchEmailTerm, $options: 'i' },
-      });
-    }
+    const filter: FilterQuery<Blog> = { deletedAt: null };
 
     const blogs = await this.BlogModel.find(filter)
       .sort({ [query.sortBy]: query.sortDirection })
@@ -54,10 +35,7 @@ export class BlogsQueryRepository {
       .limit(query.pageSize);
 
     const totalCount = await this.BlogModel.countDocuments(filter);
-
-    const items = blogs.map((blog) =>
-      BlogViewDto.mapToView(blog as BlogDocument),
-    );
+    const items = blogs.map((blog) => BlogViewDto.mapToView(blog));
 
     return PaginatedViewDto.mapToView({
       items,

@@ -8,14 +8,14 @@ import { BlogsQueryRepository } from '../infrastructure/query/blogs.query-reposi
 import { CreateBlogDto } from '../dto/create-blog.dto';
 import { CreatePostThroughBlogDto } from '../dto/create-post-through-blog.dto';
 import { PostsViewDto } from '../../posts/view-dto/posts.view-dto';
+import { GetPostsQueryParams } from '../../posts/api/input-dto/get-posts-query-params.input-dto';
 
 @Controller('blogs')
 export class BlogsController {
   constructor(
     private blogsQueryRepository: BlogsQueryRepository,
     private blogsService: BlogsService,
-  ) {
-  }
+  ) {}
 
   @Get()
   async getAll(
@@ -33,10 +33,13 @@ export class BlogsController {
   @ApiResponse({
     status: 200,
     description: 'Return all posts of blog',
-    type: [PostsViewDto],
+    type: PaginatedViewDto<PostsViewDto[]>,
   })
-  async getPostsOfBlog(@Param('id') id: string): Promise<PostsViewDto[]> {
-    return this.blogsService.getPostsOfBlog(id);
+  async getPostsOfBlog(
+    @Param('id') id: string,
+    @Query() query: GetPostsQueryParams,
+  ): Promise<PaginatedViewDto<PostsViewDto[]>> {
+    return this.blogsService.getPostsOfBlog(id, query);
   }
 
   @Post()

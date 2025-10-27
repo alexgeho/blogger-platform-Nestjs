@@ -22,8 +22,8 @@ export class Post {
   blogName: string;
 
   // createdAt и updatedAt создаются автоматически через timestamps
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 
   @Prop({
     type: Object,
@@ -56,7 +56,7 @@ export class Post {
     post.content = dto.content;
     post.blogId = dto.blogId;
     post.blogName = dto.blogName;
-    post.createdAt = dto.createdAt.toISOString();
+    post.createdAt = dto.createdAt;
     return post;
   }
 }

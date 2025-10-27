@@ -14,18 +14,16 @@ export class PostsQueryRepository {
     private PostModel: PostModelType,
   ) {}
 
-  // ✅ Получить все посты конкретного блога (с пагинацией)
   async getAllByBlogId(
     blogId: string,
-    query?: GetPostsQueryParams,
+    query: GetPostsQueryParams,
   ): Promise<PaginatedViewDto<PostsViewDto[]>> {
-    const filter: FilterQuery<Post> = { blogId, deletedAt: null };
+    const filter: FilterQuery<Post> = { blogId };
 
-    // Если query нет (например, вызов из BlogsService без пагинации)
-    const pageNumber = query?.pageNumber ?? 1;
-    const pageSize = query?.pageSize ?? 10;
-    const sortBy = query?.sortBy ?? 'createdAt';
-    const sortDirection = query?.sortDirection ?? -1;
+    const pageNumber = query.pageNumber;
+    const pageSize = query.pageSize;
+    const sortBy = query.sortBy;
+    const sortDirection = query.sortDirection;
 
     const totalCount = await this.PostModel.countDocuments(filter);
 
@@ -45,7 +43,6 @@ export class PostsQueryRepository {
     });
   }
 
-  // ✅ Получить пост по id
   async getByIdOrNotFoundFail(id: string): Promise<PostsViewDto> {
     const post = await this.PostModel.findOne({
       _id: id,

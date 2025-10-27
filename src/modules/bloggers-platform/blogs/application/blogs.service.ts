@@ -9,6 +9,8 @@ import { CreatePostThroughBlogDto } from '../dto/create-post-through-blog.dto';
 import { PostsService } from '../../posts/application/posts.service';
 import { PostsViewDto } from '../../posts/view-dto/posts.view-dto';
 import { PostsQueryRepository } from '../../posts/infrastructure/query/posts.query-repository';
+import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
+import { GetPostsQueryParams } from '../../posts/api/input-dto/get-posts-query-params.input-dto';
 
 @Injectable()
 export class BlogsService {
@@ -20,16 +22,16 @@ export class BlogsService {
     private postsQueryRepository: PostsQueryRepository,
   ) {}
 
-  async getPostsOfBlog(blogId: string): Promise<PostsViewDto[]> {
+  async getPostsOfBlog(
+    blogId: string,
+    query: GetPostsQueryParams,
+  ): Promise<PaginatedViewDto<PostsViewDto[]>> {
     const blog = await this.blogsRepository.findById(blogId);
     if (!blog) {
       throw new NotFoundException(`Blog with id ${blogId} not found`);
     }
 
-    const posts = await this.postsQueryRepository.getAllByBlogId(blogId);
-    return posts;
-
-
+    return await this.postsQueryRepository.getAllByBlogId(blogId, query);
   }
 
   async createBlog(dto: CreateBlogDto): Promise<string> {
@@ -61,7 +63,6 @@ export class BlogsService {
 
     const postView =
       await this.postsQueryRepository.getByIdOrNotFoundFail(newPostId);
-
 
     return postView; // 👈 Вот это обязательный return!
   }

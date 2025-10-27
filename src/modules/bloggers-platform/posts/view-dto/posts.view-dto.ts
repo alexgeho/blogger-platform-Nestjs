@@ -37,7 +37,7 @@ export class PostsViewDto {
     dto.content = post.content;
     dto.blogId = post.blogId;
     dto.blogName = post.blogName;
-    dto.createdAt = post.createdAt;
+    dto.createdAt = post.createdAt?.toISOString?.() ?? new Date().toISOString();
 
     dto.extendedLikesInfo = {
       likesCount: post.extendedLikesInfo?.likesCount ?? 0,
@@ -54,7 +54,7 @@ export class PostsViewDto {
     return dto;
   }
 
-  static mapManyToView(posts: PostDocument[]): PostsViewDto[] {
+  static mapManyToView(posts: (PostDocument | any)[]): PostsViewDto[] {
     return posts.map((p) => PostsViewDto.mapToView(p));
   }
 }
