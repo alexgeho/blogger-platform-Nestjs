@@ -5,6 +5,5 @@ import { BlogsSortBy } from './blogs-sort-by';
 //наследуемся от класса BaseQueryParams, где уже есть pageNumber, pageSize и т.п., чтобы не дублировать эти свойства
 export class GetBlogsQueryParams extends BaseQueryParams {
   sortBy = BlogsSortBy.CreatedAt;
-  searchLoginTerm: string | null = null;
-  searchEmailTerm: string | null = null;
+  searchNameTerm: string | null = null;
 }

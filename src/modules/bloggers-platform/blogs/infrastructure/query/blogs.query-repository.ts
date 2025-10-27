@@ -29,6 +29,10 @@ export class BlogsQueryRepository {
   ): Promise<PaginatedViewDto<BlogViewDto[]>> {
     const filter: FilterQuery<Blog> = { deletedAt: null };
 
+    if (query.searchNameTerm) {
+      filter.name = { $regex: query.searchNameTerm, $options: 'i' };
+    }
+
     const blogs = await this.BlogModel.find(filter)
       .sort({ [query.sortBy]: query.sortDirection })
       .skip(query.calculateSkip())
