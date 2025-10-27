@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -34,6 +35,21 @@ export class PostController {
   @Get(':id')
   async getById(@Param('id') id: string): Promise<PostsViewDto> {
     return this.postsQueryRepository.getByIdOrNotFoundFail(id);
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  async deletePost(@Param('id') id: string): Promise<void> {
+    await this.postsService.deletePost(id);
+  }
+
+  @Put(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async putPost(
+    @Param('id') id: string,
+    @Body() body: CreatePostDto,
+  ): Promise<PostsViewDto> {
+    return this.postsService.updatePost(id, body);
   }
 
   @Post()

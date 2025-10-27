@@ -22,11 +22,36 @@ export class BlogsService {
     private postsQueryRepository: PostsQueryRepository,
   ) {}
 
+  async deleteBlog(id: string): Promise<void> {
+    console.log('➡️ deleteBlog called with id:', id);
+
+    const blogExist = await this.blogsRepository.findOrNotFoundFail(id);
+    console.log('✅ Found blog:', blogExist?._id);
+
+    if (blogExist.deletedAt) {
+      throw new NotFoundException(`Blog with id ${id} not found`);
+    }
+
+    await this.blogsRepository.deleteBlog(blogExist);
+  }
+
+  async updateBlog(id: string, dto: CreateBlogDto): Promise<string> {
+    const blog = await this.blogsRepository.findOrNotFoundFail(id);
+    if (!blog) {
+      throw new NotFoundException(`Blog with id ${id} not found`);
+    }
+    blog.update(dto);
+
+    await this.blogsRepository.save(blog);
+
+    return blog._id.toString();
+  }
+
   async getPostsOfBlog(
     blogId: string,
     query: GetPostsQueryParams,
   ): Promise<PaginatedViewDto<PostsViewDto[]>> {
-    const blog = await this.blogsRepository.findById(blogId);
+    const blog = await this.blogsRepository.findOrNotFoundFail(blogId);
     if (!blog) {
       throw new NotFoundException(`Blog with id ${blogId} not found`);
     }
@@ -51,7 +76,7 @@ export class BlogsService {
     body: CreatePostThroughBlogDto,
     id: string,
   ): Promise<PostsViewDto> {
-    const blog = await this.blogsRepository.findById(id);
+    const blog = await this.blogsRepository.findOrNotFoundFail(id);
     if (!blog) {
       throw new NotFoundException(`Blog with id ${id} not found`);
     }

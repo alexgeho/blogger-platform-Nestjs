@@ -18,8 +18,29 @@ export class PostsService {
     private blogsRepository: BlogsRepository,
   ) {}
 
+  async deletePost(id: string): Promise<void> {
+    const postExist = await this.postsRepository.findOrNotFoundFail(id);
+    if (postExist.deletedAt) {
+      throw new NotFoundException(`Blog with id ${id} not found`);
+    }
+
+    await this.postsRepository.deletePost(postExist);
+  }
+
+  async updatePost(id: string, dto: CreatePostDto): Promise<PostsViewDto> {
+    const post = await this.postsRepository.findById(id);
+    if (!post) {
+      throw new NotFoundException(`Post with id ${id} not found`);
+    }
+
+    post.update(dto);
+    await this.postsRepository.save(post);
+
+    return PostsViewDto.mapToView(post);
+  }
+
   async createPost(dto: CreatePostDto): Promise<string> {
-    const blog = await this.blogsRepository.findById(dto.blogId);
+    const blog = await this.blogsRepository.findOrNotFoundFail(dto.blogId);
 
     if (!blog) {
       throw new NotFoundException(`Blog with id ${dto.blogId} not found`);
@@ -38,7 +59,7 @@ export class PostsService {
     dto: CreatePostThroughBlogDto,
     id: string,
   ): Promise<string> {
-    const blog = await this.blogsRepository.findById(id);
+    const blog = await this.blogsRepository.findOrNotFoundFail(id);
 
     if (!blog) {
       throw new NotFoundException(`Blog with id ${id} not found`);

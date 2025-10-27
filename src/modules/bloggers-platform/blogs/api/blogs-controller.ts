@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { BlogsService } from '../application/blogs.service';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
@@ -65,5 +76,22 @@ export class BlogsController {
     @Body() body: CreatePostThroughBlogDto,
   ): Promise<PostsViewDto> {
     return this.blogsService.createPostThroughBlog(body, id);
+  }
+
+  @Put(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateBlog(
+    @Param('id') id: string,
+    @Body() body: CreateBlogDto,
+  ): Promise<BlogViewDto> {
+    const blogId: string = await this.blogsService.updateBlog(id, body);
+
+    return this.blogsQueryRepository.getByIdOrNotFoundFail(blogId);
+  }
+
+  @Delete(':id')
+  @HttpCode(204)
+  async deleteBlog(@Param('id') id: string): Promise<void> {
+    await this.blogsService.deleteBlog(id);
   }
 }

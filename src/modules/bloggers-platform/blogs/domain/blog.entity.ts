@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
 import { CreateBlogDomainDto } from './dto/create-blog.domain.dto';
+import { CreateBlogDto } from '../dto/create-blog.dto';
 
 @Schema({ timestamps: true })
 export class Blog {
@@ -20,6 +21,9 @@ export class Blog {
   @Prop({ type: Boolean, default: false })
   isMembership: boolean;
 
+  @Prop({ type: Date, default: null })
+  deletedAt: Date | null;
+
   /**
    * Factory method to create a Blog entity
    * (DDD: создание через фабричный метод, а не напрямую)
@@ -30,7 +34,21 @@ export class Blog {
     blog.description = dto.description;
     blog.websiteUrl = dto.websiteUrl;
     blog.isMembership = false;
+    blog.deletedAt = null;
     return blog;
+  }
+
+  update(dto: CreateBlogDto): void {
+    this.name = dto.name;
+    this.description = dto.description;
+    this.websiteUrl = dto.websiteUrl;
+  }
+
+  makeDeleted() {
+    if (this.deletedAt !== null) {
+      throw new Error('Entity already deleted');
+    }
+    this.deletedAt = new Date();
   }
 
   /**
