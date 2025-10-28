@@ -1,4 +1,5 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
+import { BadRequestException } from '@nestjs/common';
 import { HydratedDocument, Model } from 'mongoose';
 import { Name, NameSchema } from './name.schema';
 import { CreateUserDomainDto } from './dto/create-user.domain.dto';
@@ -60,10 +61,8 @@ export class User {
    * Deletion timestamp, nullable, if date exist, means entity soft deleted
    * @type {Date | null}
    */
-  @Prop({ type: Date, nullable: true })
+  @Prop({ type: Date, default: null })
   deletedAt: Date | null;
-
-
 
   /**
    * Factory method to create a User instance
@@ -78,10 +77,10 @@ export class User {
     user.login = dto.login;
     user.isEmailConfirmed = false; // пользователь ВСЕГДА должен после регистрации подтверждить свой Email
 
-    user.name = {
-      firstName: 'firstName xxx',
-      lastName: 'lastName yyy',
-    };
+    // user.name = {
+    //   firstName: 'firstName xxx',
+    //   lastName: 'lastName yyy',
+    // };
 
     return user as UserDocument;
   }
@@ -92,12 +91,12 @@ export class User {
    * @throws {Error} If the entity is already deleted
    * DDD сontinue: инкапсуляция (вызываем методы, которые меняют состояние\св-ва) объектов согласно правилам этого объекта
    */
-  // makeDeleted() {
-  //   if (this.deletedAt !== null) {
-  //     throw new Error('Entity already deleted');
-  //   }
-  //   this.deletedAt = new Date();
-  // }
+  makeDeleted() {
+    if (this.deletedAt !== null) {
+      throw new BadRequestException('User already deleted');
+    }
+    this.deletedAt = new Date();
+  }
 
   /**
    * Updates the user instance with new data
