@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from '../domain/user.entity';
 import type { UserModelType } from '../domain/user.entity';
-
 import bcrypt from 'bcrypt';
 import { UsersRepository } from '../infrastructure/user.repository';
 import { CreateUserDto, UpdateUserDto } from '../dto/create-user.dto';
