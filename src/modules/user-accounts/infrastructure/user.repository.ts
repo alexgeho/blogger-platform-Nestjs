@@ -3,11 +3,19 @@ import { User, UserDocument } from '../domain/user.entity';
 import type { UserModelType } from '../domain/user.entity';
 
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { LoginDto } from '../dto/loginDto';
 
 @Injectable()
 export class UsersRepository {
   //инжектирование модели через DI
   constructor(@InjectModel(User.name) private UserModel: UserModelType) {}
+
+  async findByLoginOrEmail(dto: LoginDto): Promise<User | null> {
+    const user = this.UserModel.findOne({
+      $or: [{ login: dto.loginOrEmail }, { email: dto.loginOrEmail }],
+    });
+    return user;
+  }
 
   async findById(id: string): Promise<UserDocument | null> {
     return this.UserModel.findOne({

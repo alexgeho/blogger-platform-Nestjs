@@ -1,6 +1,6 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { BadRequestException } from '@nestjs/common';
-import { HydratedDocument, Model } from 'mongoose';
+import { HydratedDocument, Model, Types } from 'mongoose';
 import { Name, NameSchema } from './name.schema';
 import { CreateUserDomainDto } from './dto/create-user.domain.dto';
 import { UpdateUserDto } from '../dto/create-user.dto';
@@ -12,6 +12,8 @@ import { UpdateUserDto } from '../dto/create-user.dto';
  */
 @Schema({ timestamps: true })
 export class User {
+  _id: Types.ObjectId; // ✅ Только тип, без @Prop
+
   /**
    * Login of the user (must be uniq)
    * @type {string}

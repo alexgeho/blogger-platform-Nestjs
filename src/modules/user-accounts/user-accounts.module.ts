@@ -11,9 +11,21 @@ import { UsersRepository } from './infrastructure/user.repository';
 import { AuthController } from './api/auth.controller';
 import { SecurityDevicesController } from './api/security-devices.controller';
 import { UsersService } from './application/users.service';
-
+import { AuthService } from './application/auth.service';
+import { CryptoService } from './application/crypto.service';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 @Module({
   imports: [
+    ConfigModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '5m' },
+      }),
+    }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   controllers: [UsersController, AuthController, SecurityDevicesController],
@@ -21,6 +33,9 @@ import { UsersService } from './application/users.service';
     UsersService,
     UsersRepository,
     UsersQueryRepository,
+    AuthService,
+    CryptoService,
+    JwtService,
     SecurityDevicesQueryRepository,
     AuthQueryRepository,
     UsersExternalQueryRepository,

@@ -1,9 +1,9 @@
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserAccountsModule } from './modules/user-accounts/user-accounts.module'; // (Assuming correct path)
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TestingModule } from './modules/testing/testing.module';
 import { BloggersPlatformModule } from './modules/bloggers-platform/bloggers-platform.module';
 
@@ -11,7 +11,8 @@ import { BloggersPlatformModule } from './modules/bloggers-platform/bloggers-pla
   imports: [
     // 1. Configure ConfigModule to load .env file
     ConfigModule.forRoot({
-      isGlobal: true, // Makes ConfigService available everywhere
+      isGlobal: true,
+      envFilePath: '.env',
     }),
 
     // 2. USE MongooseModule.forRootAsync() to inject the configuration service
