@@ -6,14 +6,13 @@ import { UserAccountsModule } from './modules/user-accounts/user-accounts.module
 import { MongooseModule } from '@nestjs/mongoose';
 import { TestingModule } from './modules/testing/testing.module';
 import { BloggersPlatformModule } from './modules/bloggers-platform/bloggers-platform.module';
+import { configModule } from '../config';
+
+console.log('process.env.MONGO_URI:');
 
 @Module({
   imports: [
-    // 1. Configure ConfigModule to load .env file
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: '.env',
-    }),
+    configModule,
 
     // 2. USE MongooseModule.forRootAsync() to inject the configuration service
     MongooseModule.forRootAsync({

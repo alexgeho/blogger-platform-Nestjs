@@ -25,6 +25,20 @@ export class PostController {
     private postsService: PostsService,
   ) {}
 
+  @Post(':id/comments')
+  @ApiResponse({
+    status: 201,
+    description: 'Returns the newly created post',
+    type: PostsViewDto,
+  })
+  async createComment(
+    @Body() body: CreateCommentDto,
+    @Param('id') id: string,
+  ): Promise<PostsViewDto> {
+    const postId = await this.postsService.createComment(body);
+    return this.postsQueryRepository.getByIdOrNotFoundFail(postId);
+  }
+
   @Get()
   async getAll(
     @Query() query: GetPostsQueryParams,

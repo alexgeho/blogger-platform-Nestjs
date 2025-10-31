@@ -15,6 +15,7 @@ import { CreateUserInputDto } from './input-dto/users.input-dto';
 import { GetUsersQueryParams } from './input-dto/get-users-query-params.input-dto';
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 import { UsersService } from '../application/users.service';
+import * as process from 'node:process';
 
 @Controller('users')
 export class UsersController {
@@ -22,6 +23,15 @@ export class UsersController {
     private usersQueryRepository: UsersQueryRepository,
     private usersService: UsersService,
   ) {}
+
+  @Get('env')
+  async getEnv() {
+    return {
+      JWT_SECRET: process.env.JWT_SECRET,
+      MONGO_URL: process.env.MONGO_URL,
+      NODE_ENV: process.env.NODE_ENV,
+    };
+  }
 
   @Get(':id')
   async getById(@Param('id') id: string): Promise<UserViewDto> {
