@@ -1,4 +1,5 @@
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { configModule } from '../config';
+import { ConfigService } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -6,7 +7,6 @@ import { UserAccountsModule } from './modules/user-accounts/user-accounts.module
 import { MongooseModule } from '@nestjs/mongoose';
 import { TestingModule } from './modules/testing/testing.module';
 import { BloggersPlatformModule } from './modules/bloggers-platform/bloggers-platform.module';
-import { configModule } from '../config';
 
 console.log('process.env.MONGO_URI:');
 
@@ -16,7 +16,6 @@ console.log('process.env.MONGO_URI:');
 
     // 2. USE MongooseModule.forRootAsync() to inject the configuration service
     MongooseModule.forRootAsync({
-      imports: [ConfigModule], // Make sure ConfigModule is imported
       useFactory: (configService: ConfigService) => ({
         // Get the MONGO_URL from the .env file using the ConfigService
         uri: configService.get<string>('MONGO_URL'),

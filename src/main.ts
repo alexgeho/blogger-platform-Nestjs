@@ -1,22 +1,22 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { appSetup } from './setup/app.setup';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  appSetup(app); //глобальные настройки приложения
+  appSetup(app); // глобальные настройки приложения
 
-  const PORT = process.env.PORT || 5005; //TODO: move to configService. will be in the following lessons
-  console.log('JWT_SECRET =', process.env.JWT_SECRET);
+  // Получаем доступ к ConfigService (он приходит из configModule)
+  const config = app.get(ConfigService);
+  const port = config.get<string>('PORT') || '5005';
+  const jwtSecret = config.get<string>('JWT_SECRET');
 
-  await app.listen(PORT, () => {
-    console.log('JWT_SECRET =', process.env.JWT_SECRET);
-    console.log('Server is running on port ' + PORT);
-  });
+  console.log('JWT_SECRET =', jwtSecret);
+
+  await app.listen(port);
+  console.log(`🚀 Server is running on port ${port}`);
 }
 
 bootstrap();
