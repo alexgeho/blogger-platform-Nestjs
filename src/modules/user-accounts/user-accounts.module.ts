@@ -15,6 +15,7 @@ import { AuthService } from './application/auth.service';
 import { CryptoService } from './application/crypto.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CONFIG_KEYS } from '../../config/config-keys';
 @Module({
   imports: [
     ConfigModule,
@@ -22,7 +23,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
+        // secret: configService.get<string>(process.env.JWT_SECRET),
+        secret: configService.get<string>(CONFIG_KEYS.JWT_SECRET),
         signOptions: { expiresIn: '5m' },
       }),
     }),

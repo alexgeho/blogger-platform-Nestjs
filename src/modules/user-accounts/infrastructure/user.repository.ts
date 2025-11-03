@@ -4,6 +4,7 @@ import type { UserModelType } from '../domain/user.entity';
 
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { LoginDto } from '../dto/loginDto';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class UsersRepository {

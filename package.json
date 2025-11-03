@@ -11,6 +11,7 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:bitaw": "cross-env NODE_ENV=bitaw nest start --watch",
+    "start:devLoc": "cross-env NODE_ENV=development.local nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",

@@ -1,0 +1,6 @@
+export const CONFIG_KEYS = {
+  JWT_SECRET: 'JWT_SECRET',
+  JWT_EXPIRES_IN: 'JWT_EXPIRES_IN',
+  MONGO_URL: 'MONGO_URL',
+  PORT: 'PORT',
+} as const;

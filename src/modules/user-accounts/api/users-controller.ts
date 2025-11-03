@@ -16,22 +16,15 @@ import { GetUsersQueryParams } from './input-dto/get-users-query-params.input-dt
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 import { UsersService } from '../application/users.service';
 import * as process from 'node:process';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('users')
 export class UsersController {
   constructor(
     private usersQueryRepository: UsersQueryRepository,
     private usersService: UsersService,
+    private configService: ConfigService,
   ) {}
-
-  @Get('env')
-  async getEnv() {
-    return {
-      JWT_SECRET: process.env.JWT_SECRET,
-      MONGO_URL: process.env.MONGO_URL,
-      NODE_ENV: process.env.NODE_ENV,
-    };
-  }
 
   @Get(':id')
   async getById(@Param('id') id: string): Promise<UserViewDto> {

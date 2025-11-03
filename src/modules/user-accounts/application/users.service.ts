@@ -5,6 +5,7 @@ import type { UserModelType } from '../domain/user.entity';
 import bcrypt from 'bcrypt';
 import { UsersRepository } from '../infrastructure/user.repository';
 import { CreateUserDto, UpdateUserDto } from '../dto/create-user.dto';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class UsersService {
@@ -49,4 +50,21 @@ export class UsersService {
 
     await this.usersRepository.save(user);
   }
+  //
+  // async registration(dto: CreateUserDto) {
+  //   const createdUserId = await this.createUser(dto);
+  //
+  //   const confirmCode = 'uuid';
+  //
+  //   const user = await this.usersRepository.findOrNotFoundFail(
+  //     new Types.ObjectId(createdUserId),
+  //   );
+  //
+  //   user.setConfirmationCode(confirmCode);
+  //   await this.usersRepository.save(user);
+  //
+  //   this.emailService
+  //     .sendConfirmationEmail(user.email, confirmCode)
+  //     .catch(console.error);
+  // }
 }
