@@ -16,6 +16,7 @@ import { CryptoService } from './application/crypto.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CONFIG_KEYS } from '../../config/config-keys';
+import { NotificationsModule } from '../notifications/notifications.module';
 @Module({
   imports: [
     ConfigModule,
@@ -29,6 +30,7 @@ import { CONFIG_KEYS } from '../../config/config-keys';
       }),
     }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    NotificationsModule,
   ],
   controllers: [UsersController, AuthController, SecurityDevicesController],
   providers: [

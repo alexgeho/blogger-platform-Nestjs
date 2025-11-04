@@ -66,6 +66,9 @@ export class User {
   @Prop({ type: Date, default: null })
   deletedAt: Date | null;
 
+  @Prop({ type: String, default: null })
+  confirmationCode: string;
+
   /**
    * Factory method to create a User instance
    * @param {CreateUserDto} dto - The data transfer object for user creation
@@ -98,6 +101,10 @@ export class User {
       throw new BadRequestException('User already deleted');
     }
     this.deletedAt = new Date();
+  }
+
+  setConfirmationCode(confirmCode: string) {
+    this.confirmationCode = confirmCode;
   }
 
   /**

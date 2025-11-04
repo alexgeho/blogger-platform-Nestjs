@@ -6,6 +6,8 @@ import bcrypt from 'bcrypt';
 import { UsersRepository } from '../infrastructure/user.repository';
 import { CreateUserDto, UpdateUserDto } from '../dto/create-user.dto';
 import { Types } from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
+import { EmailService } from '../../notifications/email.service';
 
 @Injectable()
 export class UsersService {
@@ -14,6 +16,7 @@ export class UsersService {
     @InjectModel(User.name)
     private UserModel: UserModelType,
     private usersRepository: UsersRepository,
+    private emailService: EmailService,
   ) {}
 
   async createUser(dto: CreateUserDto): Promise<string> {
@@ -50,21 +53,19 @@ export class UsersService {
 
     await this.usersRepository.save(user);
   }
-  //
-  // async registration(dto: CreateUserDto) {
-  //   const createdUserId = await this.createUser(dto);
-  //
-  //   const confirmCode = 'uuid';
-  //
-  //   const user = await this.usersRepository.findOrNotFoundFail(
-  //     new Types.ObjectId(createdUserId),
-  //   );
-  //
-  //   user.setConfirmationCode(confirmCode);
-  //   await this.usersRepository.save(user);
-  //
-  //   this.emailService
-  //     .sendConfirmationEmail(user.email, confirmCode)
-  //     .catch(console.error);
-  // }
+
+  async registration(dto: CreateUserDto) {
+    const createdUserId = await this.createUser(dto);
+
+    const confirmCode = uuidv4();
+
+    const user = await this.usersRepository.findOrNotFoundFail(createdUserId);
+
+    user.setConfirmationCode(confirmCode);
+    await this.usersRepository.save(user);
+
+    this.emailService
+      .sendConfirmationEmail(user.email, confirmCode)
+      .catch(console.error);
+  }
 }

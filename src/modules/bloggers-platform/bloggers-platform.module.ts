@@ -11,6 +11,7 @@ import { PostsRepository } from './posts/infrastructure/posts.repository';
 import { PostsService } from './posts/application/posts.service';
 import { PostsQueryRepository } from './posts/infrastructure/query/posts.query-repository';
 import { PostSchema, Post } from './posts/domain/post.entity';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 //тут регистрируем провайдеры всех сущностей блоггерской платформы (blogs, posts, comments, etc...)
 @Module({
@@ -20,6 +21,7 @@ import { PostSchema, Post } from './posts/domain/post.entity';
       { name: Blog.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
     ]),
+    NotificationsModule,
   ],
   controllers: [BlogsController, PostController],
   providers: [
