@@ -12,7 +12,6 @@ import { DomainExceptionCode } from '../domain-exception-codes';
 @Catch()
 export class AllHttpExceptionsFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost): void {
-    console.log('exeption:::::::::', exception);
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
