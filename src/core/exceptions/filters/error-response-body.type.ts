@@ -8,3 +8,7 @@ export type ErrorResponseBody = {
   extensions: Extension[];
   code: DomainExceptionCode;
 };
+
+export type ValidationErrorResponseBody = {
+  errorsMessages: { message: string; field: string }[];
+};
