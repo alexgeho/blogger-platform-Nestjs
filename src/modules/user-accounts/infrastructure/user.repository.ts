@@ -18,6 +18,11 @@ export class UsersRepository {
     return user;
   }
 
+  async findByLogin(login: string): Promise<User | null> {
+    const user = this.UserModel.findOne({ login });
+    return user;
+  }
+
   async findById(id: string): Promise<UserDocument | null> {
     return this.UserModel.findOne({
       _id: id,

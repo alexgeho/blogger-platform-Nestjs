@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { UsersRepository } from '../infrastructure/user.repository';
 import { CryptoService } from './crypto.service';
 import * as process from 'node:process';
+import { UserContextDto } from '../guards/dto/user-context.dto';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +14,27 @@ export class AuthService {
     private jwtService: JwtService,
     private cryptoService: CryptoService,
   ) {}
+
+  async validateUser(
+    login: string,
+    password: string,
+  ): Promise<UserContextDto | null> {
+    const user = await this.usersRepository.findByLogin(login);
+    if (!user) {
+      return null;
+    }
+
+    const isPasswordValid = await this.cryptoService.comparePasswords({
+      password,
+      hash: user.passwordHash,
+    });
+
+    if (!isPasswordValid) {
+      return null;
+    }
+
+    return { id: user._id.toString() };
+  }
 
   async login(dto: LoginDto): Promise<{ accessToken: string } | null> {
     const user: User | null =
