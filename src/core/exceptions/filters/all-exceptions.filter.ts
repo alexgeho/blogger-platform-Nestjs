@@ -13,6 +13,7 @@ import { DomainExceptionCode } from '../domain-exception-codes';
 @Catch()
 export class AllHttpExceptionsFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost): void {
+    console.log('exception:::::::: ', exception);
     //ctx нужен, чтобы получить request и response (express). Это из документации, делаем по аналогии
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
