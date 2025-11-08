@@ -1,11 +1,16 @@
 import { LoginDto } from '../dto/loginDto';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../domain/user.entity';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersRepository } from '../infrastructure/user.repository';
 import { CryptoService } from './crypto.service';
 import * as process from 'node:process';
 import { UserContextDto } from '../guards/dto/user-context.dto';
+import {
+  DomainException,
+  Extension,
+} from '../../../core/exceptions/domain-exceptions';
+import { DomainExceptionCode } from '../../../core/exceptions/domain-exception-codes';
 
 @Injectable()
 export class AuthService {
@@ -41,7 +46,13 @@ export class AuthService {
       await this.usersRepository.findByLoginOrEmail(dto);
     console.log('user:', user);
     if (!user) {
-      return null;
+      const field = dto.loginOrEmail.includes('@') ? 'email' : 'login';
+
+      throw new DomainException({
+        code: DomainExceptionCode.Unauthorized,
+        message: 'User not found',
+        extensions: [new Extension(`User with this ${field} not found`, field)],
+      });
     }
 
     const isPasswordValid = await this.cryptoService.comparePasswords({
@@ -50,17 +61,12 @@ export class AuthService {
     });
     console.log('isPasswordValid: ', isPasswordValid, '+');
     if (!isPasswordValid) {
-      return null;
+      throw new UnauthorizedException();
     }
-    console.log('id-----: ', user._id, '');
-    console.log('processENV:::::::::::::', process.env.JWT_SECRET);
     const accessToken = this.jwtService.sign(
       { id: user._id },
       { secret: process.env.JWT_SECRET },
     );
-
-    console.log('accessToken: ', accessToken);
-
     return { accessToken };
   }
 }

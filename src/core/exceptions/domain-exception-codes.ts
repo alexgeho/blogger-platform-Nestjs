@@ -3,7 +3,7 @@ export enum DomainExceptionCode {
   //common
   NotFound = 1,
   BadRequest = 2,
-  InternalServerError = 3,
+  InternalServerError = 'InternalServerError',
   Forbidden = 4,
   ValidationError = 5,
   //auth

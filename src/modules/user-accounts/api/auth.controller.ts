@@ -2,7 +2,8 @@ import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { LoginDto } from '../dto/loginDto';
 import { AuthService } from '../application/auth.service';
 import { UsersService } from '../application/users.service';
-import { CreateUserDto } from '../dto/create-user.dto';
+import { CreateUserInputDto } from './input-dto/users.input-dto';
+import { EmailResendDto } from './input-dto/email-resend.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -17,7 +18,12 @@ export class AuthController {
   }
   @Post('registration')
   @HttpCode(204)
-  async registration(@Body() dto: CreateUserDto): Promise<void> {
+  async registration(@Body() dto: CreateUserInputDto): Promise<void> {
     await this.usersService.registration(dto);
+  }
+  @Post('registration-email-resending')
+  @HttpCode(204)
+  async emailResending(@Body() dto: EmailResendDto): Promise<void> {
+    await this.usersService.emailResending(dto);
   }
 }

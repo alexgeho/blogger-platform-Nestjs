@@ -1,13 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from '../domain/user.entity';
 import type { UserModelType } from '../domain/user.entity';
 import bcrypt from 'bcrypt';
 import { UsersRepository } from '../infrastructure/user.repository';
 import { CreateUserDto, UpdateUserDto } from '../dto/create-user.dto';
-import { Types } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import { EmailService } from '../../notifications/email.service';
+import { EmailResendDto } from '../api/input-dto/email-resend.dto';
+import {
+  DomainException,
+  Extension,
+} from '../../../core/exceptions/domain-exceptions';
+import { DomainExceptionCode } from '../../../core/exceptions/domain-exception-codes';
 
 @Injectable()
 export class UsersService {
@@ -19,7 +24,35 @@ export class UsersService {
     private emailService: EmailService,
   ) {}
 
+  async emailResending(dto: EmailResendDto): Promise<void> {
+    const userExist = await this.usersRepository.findByEmail(dto);
+    if (!userExist) {
+      throw new DomainException({
+        code: DomainExceptionCode.NotFound,
+        message: 'Validation failed',
+        extensions: [new Extension(`email not exists`, 'email')],
+      });
+    }
+    const confirmCode = uuidv4();
+    userExist.setConfirmationCode(confirmCode);
+
+    this.emailService
+      .sendConfirmationEmail(userExist.email, confirmCode)
+      .catch(console.error);
+  }
+
   async createUser(dto: CreateUserDto): Promise<string> {
+    const existingUser = await this.usersRepository.findByCreateUserDto(dto);
+    console.log('existingUser:::::::::::', existingUser);
+    if (existingUser) {
+      const field = existingUser.email === dto.email ? 'email' : 'login';
+      throw new DomainException({
+        code: DomainExceptionCode.ValidationError,
+        message: 'Validation failed',
+        extensions: [new Extension(`${field} already exists`, field)],
+      });
+    }
+
     //TODO: move to bcrypt service
     const passwordHash = await bcrypt.hash(dto.password, 10);
 
@@ -63,7 +96,6 @@ export class UsersService {
 
     user.setConfirmationCode(confirmCode);
     await this.usersRepository.save(user);
-
     this.emailService
       .sendConfirmationEmail(user.email, confirmCode)
       .catch(console.error);

@@ -13,8 +13,7 @@ export class UsersQueryRepository {
   constructor(
     @InjectModel(User.name)
     private UserModel: UserModelType,
-  ) {
-  }
+  ) {}
 
   async getByIdOrNotFoundFail(id: string): Promise<UserViewDto> {
     const user = await this.UserModel.findOne({
@@ -32,9 +31,7 @@ export class UsersQueryRepository {
   async getAll(
     query: GetUsersQueryParams,
   ): Promise<PaginatedViewDto<UserViewDto[]>> {
-    const filter: FilterQuery<User> = {
-      deletedAt: null,
-    };
+    const filter: FilterQuery<User> = { deletedAt: null };
 
     if (query.searchLoginTerm) {
       filter.$or = filter.$or || [];
@@ -50,8 +47,12 @@ export class UsersQueryRepository {
       });
     }
 
+    // ✅ Безопасное определение сортировки
+    const sortBy = query.sortBy ?? 'createdAt';
+    const sortDirection = query.sortDirection === 'asc' ? 1 : -1;
+
     const users = await this.UserModel.find(filter)
-      .sort({ [query.sortBy]: query.sortDirection })
+      .sort({ [sortBy]: sortDirection })
       .skip(query.calculateSkip())
       .limit(query.pageSize);
 
