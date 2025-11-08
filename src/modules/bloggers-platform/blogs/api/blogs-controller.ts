@@ -57,10 +57,11 @@ export class BlogsController {
   @ApiResponse({
     status: 201,
     description: 'Returns the newly created blog',
-    type: BlogViewDto, // <-- тут магия
+    type: BlogViewDto,
   })
-  async createBlog(@Body() body: CreateBlogDto): Promise<BlogViewDto> {
-    const blogId = await this.blogsService.createBlog(body);
+  async createBlog(@Body() dto: CreateBlogDto): Promise<BlogViewDto> {
+    console.log('dtoBody::::::', dto);
+    const blogId = await this.blogsService.createBlog(dto);
 
     return this.blogsQueryRepository.getByIdOrNotFoundFail(blogId);
   }

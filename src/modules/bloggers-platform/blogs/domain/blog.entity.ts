@@ -28,14 +28,14 @@ export class Blog {
    * Factory method to create a Blog entity
    * (DDD: создание через фабричный метод, а не напрямую)
    */
-  static createInstance(dto: CreateBlogDomainDto): Blog {
-    const blog = new Blog();
-    blog.name = dto.name;
-    blog.description = dto.description;
-    blog.websiteUrl = dto.websiteUrl;
-    blog.isMembership = false;
-    blog.deletedAt = null;
-    return blog;
+  static createInstance(this: BlogModelType, dto: CreateBlogDto): BlogDocument {
+    return new this({
+      name: dto.name,
+      description: dto.description,
+      websiteUrl: dto.websiteUrl,
+      isMembership: false,
+      deletedAt: null,
+    });
   }
 
   update(dto: CreateBlogDto): void {

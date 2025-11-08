@@ -18,22 +18,22 @@ async function bootstrap() {
   );
 
   // ✅ Глобальный ValidationPipe
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,
-      whitelist: true,
-      stopAtFirstError: false,
-      exceptionFactory: (errors) =>
-        new DomainException({
-          code: DomainExceptionCode.ValidationError,
-          message: 'Validation failed',
-          extensions: errors.map((e) => ({
-            key: e.property,
-            message: Object.values(e.constraints ?? {}).join(', '),
-          })),
-        }),
-    }),
-  );
+  // app.useGlobalPipes(
+  //   new ValidationPipe({
+  //     transform: true,
+  //     whitelist: true,
+  //     stopAtFirstError: false,
+  //     exceptionFactory: (errors) =>
+  //       new DomainException({
+  //         code: DomainExceptionCode.ValidationError,
+  //         message: 'Validation failed',
+  //         extensions: errors.map((e) => ({
+  //           key: e.property,
+  //           message: Object.values(e.constraints ?? {}).join(', '),
+  //         })),
+  //       }),
+  //   }),
+  // );
 
   const port = config.get<string>('PORT') || '5005';
   await app.listen(port);

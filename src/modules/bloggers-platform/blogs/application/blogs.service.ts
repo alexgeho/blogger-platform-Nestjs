@@ -66,7 +66,7 @@ export class BlogsService {
     domainDto.websiteUrl = dto.websiteUrl;
 
     const blog = this.BlogModel.createInstance(domainDto);
-
+    console.log('blog:::::::', blog);
     const createdBlog = await this.blogsRepository.save(blog);
 
     return createdBlog._id.toString();
