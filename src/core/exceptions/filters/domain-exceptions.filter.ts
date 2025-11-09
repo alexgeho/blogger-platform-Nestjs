@@ -4,24 +4,36 @@ import {
   ExceptionFilter,
   HttpStatus,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { DomainException } from '../domain-exceptions';
-import { Request, Response } from 'express';
 import { DomainExceptionCode } from '../domain-exception-codes';
-import { ErrorResponseBody } from './error-response-body.type';
 
-//https://docs.nestjs.com/exception-filters#exception-filters-1
-//Ошибки класса DomainException (instanceof DomainException)
+// 🎯 Ловим только DomainException
 @Catch(DomainException)
 export class DomainHttpExceptionsFilter implements ExceptionFilter {
   catch(exception: DomainException, host: ArgumentsHost): void {
-    console.log('🔥 DomainExceptionFilter triggered::::::::::::', exception);
+    console.log('🔥 DomainHttpExceptionsFilter triggered::::::::', exception);
 
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest<Request>();
 
+    // Определяем правильный HTTP статус
     const status = this.mapToHttpStatus(exception.code);
-    const responseBody = this.buildResponseBody(exception, request.url);
+
+    // 🧱 Формируем тело ответа в том же формате, что и AllHttpExceptionsFilter
+    const responseBody = {
+      errorsMessages: (exception.extensions || []).length
+        ? exception.extensions.map((e: any) => ({
+            message: e.message,
+            field: e.key,
+          }))
+        : [
+            {
+              message: exception.message || 'Unknown domain error',
+              field: 'unknown',
+            },
+          ],
+    };
 
     response.status(status).json(responseBody);
   }
@@ -34,29 +46,21 @@ export class DomainHttpExceptionsFilter implements ExceptionFilter {
       case DomainExceptionCode.EmailNotConfirmed:
       case DomainExceptionCode.PasswordRecoveryCodeExpired:
         return HttpStatus.BAD_REQUEST;
+
       case DomainExceptionCode.Forbidden:
         return HttpStatus.FORBIDDEN;
+
       case DomainExceptionCode.NotFound:
         return HttpStatus.NOT_FOUND;
+
       case DomainExceptionCode.Unauthorized:
         return HttpStatus.UNAUTHORIZED;
+
       case DomainExceptionCode.InternalServerError:
         return HttpStatus.INTERNAL_SERVER_ERROR;
-      default:
-        return HttpStatus.I_AM_A_TEAPOT;
-    }
-  }
 
-  private buildResponseBody(
-    exception: DomainException,
-    requestUrl: string,
-  ): ErrorResponseBody {
-    return {
-      timestamp: new Date().toISOString(),
-      path: requestUrl,
-      message: exception.message,
-      code: exception.code,
-      extensions: exception.extensions,
-    };
+      default:
+        return HttpStatus.BAD_REQUEST;
+    }
   }
 }

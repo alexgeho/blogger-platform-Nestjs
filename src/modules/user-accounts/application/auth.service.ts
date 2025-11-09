@@ -61,7 +61,11 @@ export class AuthService {
     });
     console.log('isPasswordValid: ', isPasswordValid, '+');
     if (!isPasswordValid) {
-      throw new UnauthorizedException();
+      throw new DomainException({
+        code: DomainExceptionCode.Unauthorized,
+        message: 'Invalid credentials',
+        extensions: [new Extension('Incorrect password', 'password')],
+      });
     }
     const accessToken = this.jwtService.sign(
       { id: user._id },

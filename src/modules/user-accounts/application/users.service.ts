@@ -24,6 +24,8 @@ export class UsersService {
     private emailService: EmailService,
   ) {}
 
+  async registrationConfirmation
+
   async emailResending(dto: EmailResendDto): Promise<void> {
     const userExist = await this.usersRepository.findByEmail(dto);
     if (!userExist) {
@@ -68,11 +70,16 @@ export class UsersService {
   }
 
   async updateUser(id: string, dto: UpdateUserDto): Promise<string> {
-    const user = await this.usersRepository.findOrNotFoundFail(id);
+    const user = await this.usersRepository.findById(id);
 
-    // не присваиваем св-ва сущностям напрямую в сервисах! даже для изменения одного св-ва
-    // создаём метод
-    user.update(dto); // change detection
+    if (!user) {
+      throw new DomainException({
+        code: DomainExceptionCode.NotFound,
+        message: 'User not found',
+        extensions: [new Extension('User not found', 'id')],
+      });
+    }
+    user.update(dto);
 
     await this.usersRepository.save(user);
 
@@ -80,7 +87,15 @@ export class UsersService {
   }
 
   async deleteUser(id: string) {
-    const user = await this.usersRepository.findOrNotFoundFail(id);
+    const user = await this.usersRepository.findById(id);
+
+    if (!user) {
+      throw new DomainException({
+        code: DomainExceptionCode.NotFound,
+        message: 'User not found',
+        extensions: [new Extension('User not found', 'id')],
+      });
+    }
 
     user.makeDeleted();
 
@@ -92,7 +107,15 @@ export class UsersService {
 
     const confirmCode = uuidv4();
 
-    const user = await this.usersRepository.findOrNotFoundFail(createdUserId);
+    const user = await this.usersRepository.findById(createdUserId);
+
+    if (!user) {
+      throw new DomainException({
+        code: DomainExceptionCode.NotFound,
+        message: 'User not found',
+        extensions: [new Extension('User not found', 'id')],
+      });
+    }
 
     user.setConfirmationCode(confirmCode);
     await this.usersRepository.save(user);

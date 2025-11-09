@@ -4,6 +4,7 @@ import { AuthService } from '../application/auth.service';
 import { UsersService } from '../application/users.service';
 import { CreateUserInputDto } from './input-dto/users.input-dto';
 import { EmailResendDto } from './input-dto/email-resend.dto';
+import { ConfirmationCode } from './input-dto/confirmation-code';
 
 @Controller('auth')
 export class AuthController {
@@ -25,5 +26,12 @@ export class AuthController {
   @HttpCode(204)
   async emailResending(@Body() dto: EmailResendDto): Promise<void> {
     await this.usersService.emailResending(dto);
+  }
+
+  @Post('registration-confirmation')
+  async registrationConfirmation(
+    @Body() code: ConfirmationCode,
+  ): Promise<void> {
+    await this.usersService.registrationConfirmation(code);
   }
 }

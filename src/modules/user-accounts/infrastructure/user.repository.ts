@@ -2,7 +2,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../domain/user.entity';
 import type { UserModelType } from '../domain/user.entity';
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { LoginDto } from '../dto/loginDto';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { EmailResendDto } from '../api/input-dto/email-resend.dto';
@@ -43,16 +43,5 @@ export class UsersRepository {
 
   async save(user: UserDocument) {
     await user.save();
-  }
-
-  async findOrNotFoundFail(id: string): Promise<UserDocument> {
-    const user = await this.findById(id);
-
-    if (!user) {
-      //TODO: replace with domain exception
-      throw new NotFoundException('user not found');
-    }
-
-    return user;
   }
 }
