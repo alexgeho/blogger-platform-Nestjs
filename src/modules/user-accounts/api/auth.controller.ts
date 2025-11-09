@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { LoginDto } from '../dto/loginDto';
 import { AuthService } from '../application/auth.service';
 import { UsersService } from '../application/users.service';
@@ -29,6 +29,7 @@ export class AuthController {
   }
 
   @Post('registration-confirmation')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async registrationConfirmation(
     @Body() code: ConfirmationCode,
   ): Promise<void> {

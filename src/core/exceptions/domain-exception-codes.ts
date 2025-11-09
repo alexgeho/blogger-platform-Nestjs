@@ -1,15 +1,15 @@
 //если специфических кодов будет много лучше разнести их в соответствующие модули
 export enum DomainExceptionCode {
   //common
-  NotFound = 1,
-  BadRequest = 2,
+  NotFound = 404,
+  BadRequest = 400,
   InternalServerError = 'InternalServerError',
-  Forbidden = 4,
-  ValidationError = 5,
+  Forbidden = 403,
+  ValidationError = 400,
   //auth
   Unauthorized = 401,
-  EmailNotConfirmed = 12,
-  ConfirmationCodeExpired = 13,
-  PasswordRecoveryCodeExpired = 14,
+  EmailNotConfirmed = 409,
+  ConfirmationCodeExpired = 410,
+  PasswordRecoveryCodeExpired = 410,
   //...
 }

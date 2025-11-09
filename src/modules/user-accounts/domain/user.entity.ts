@@ -121,6 +121,11 @@ export class User {
     this.confirmationCode = confirmCode;
   }
 
+  setConfirmed(): void {
+    this.isEmailConfirmed = true;
+    // this.confirmationCode = null; // код больше не нужен
+  }
+
   /**
    * Updates the user instance with new data
    * Resets email confirmation if email is updated

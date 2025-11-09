@@ -12,6 +12,10 @@ export class UsersRepository {
   //инжектирование модели через DI
   constructor(@InjectModel(User.name) private UserModel: UserModelType) {}
 
+  async findUserByCode(code: string) {
+    return await this.UserModel.findOne({ confirmationCode: code });
+  }
+
   async findByLoginOrEmail(dto: LoginDto): Promise<User | null> {
     const user = this.UserModel.findOne({
       $or: [{ login: dto.loginOrEmail }, { email: dto.loginOrEmail }],

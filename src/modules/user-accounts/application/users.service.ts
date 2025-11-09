@@ -13,6 +13,7 @@ import {
   Extension,
 } from '../../../core/exceptions/domain-exceptions';
 import { DomainExceptionCode } from '../../../core/exceptions/domain-exception-codes';
+import { ConfirmationCode } from '../api/input-dto/confirmation-code';
 
 @Injectable()
 export class UsersService {
@@ -24,7 +25,26 @@ export class UsersService {
     private emailService: EmailService,
   ) {}
 
-  async registrationConfirmation
+  async registrationConfirmation(code: ConfirmationCode) {
+    const user = await this.usersRepository.findUserByCode(code.code);
+    if (!user) {
+      throw new DomainException({
+        code: DomainExceptionCode.NotFound,
+        message: 'Validation failed',
+        extensions: [new Extension(`user not exists`, 'user')],
+      });
+    }
+
+    if (user.isEmailConfirmed) {
+      throw new DomainException({
+        code: DomainExceptionCode.ValidationError,
+        message: 'Validation failed',
+        extensions: [new Extension(`user already confirmed`, 'user')],
+      });
+    }
+    user.setConfirmed();
+    await this.usersRepository.save(user);
+  }
 
   async emailResending(dto: EmailResendDto): Promise<void> {
     const userExist = await this.usersRepository.findByEmail(dto);
@@ -33,6 +53,14 @@ export class UsersService {
         code: DomainExceptionCode.NotFound,
         message: 'Validation failed',
         extensions: [new Extension(`email not exists`, 'email')],
+      });
+    }
+
+    if (userExist.isEmailConfirmed) {
+      throw new DomainException({
+        code: DomainExceptionCode.ValidationError,
+        message: 'Validation failed',
+        extensions: [new Extension(`user already confirmed`, 'user')],
       });
     }
     const confirmCode = uuidv4();
