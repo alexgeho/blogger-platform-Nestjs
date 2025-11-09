@@ -12,10 +12,14 @@ import { PostsService } from './posts/application/posts.service';
 import { PostsQueryRepository } from './posts/infrastructure/query/posts.query-repository';
 import { PostSchema, Post } from './posts/domain/post.entity';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { CqrsModule } from '@nestjs/cqrs';
+import { CreateBlogUseCase } from './blogs/application/usecases/create-blog.usecase';
+import { GetBlogByIdQueryHandler } from './blogs/application/queries/get-blog-by-id.query-handler';
 
 //тут регистрируем провайдеры всех сущностей блоггерской платформы (blogs, posts, comments, etc...)
 @Module({
   imports: [
+    CqrsModule,
     UserAccountsModule,
     MongooseModule.forFeature([
       { name: Blog.name, schema: BlogSchema },
@@ -31,6 +35,9 @@ import { NotificationsModule } from '../notifications/notifications.module';
     PostsService,
     PostsRepository,
     PostsQueryRepository,
+    // --- CQRS handlers ---
+    CreateBlogUseCase,
+    GetBlogByIdQueryHandler,
   ],
   exports: [BlogsService],
 })

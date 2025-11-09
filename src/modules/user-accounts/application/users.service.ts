@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from '../domain/user.entity';
 import type { UserModelType } from '../domain/user.entity';
@@ -29,9 +29,9 @@ export class UsersService {
     const user = await this.usersRepository.findUserByCode(code.code);
     if (!user) {
       throw new DomainException({
-        code: DomainExceptionCode.NotFound,
+        code: DomainExceptionCode.ValidationError,
         message: 'Validation failed',
-        extensions: [new Extension(`user not exists`, 'user')],
+        extensions: [new Extension(`user not exists`, 'code')],
       });
     }
 
@@ -39,7 +39,7 @@ export class UsersService {
       throw new DomainException({
         code: DomainExceptionCode.ValidationError,
         message: 'Validation failed',
-        extensions: [new Extension(`user already confirmed`, 'user')],
+        extensions: [new Extension(`user already confirmed`, 'code')],
       });
     }
     user.setConfirmed();
@@ -50,7 +50,7 @@ export class UsersService {
     const userExist = await this.usersRepository.findByEmail(dto);
     if (!userExist) {
       throw new DomainException({
-        code: DomainExceptionCode.NotFound,
+        code: DomainExceptionCode.ValidationError,
         message: 'Validation failed',
         extensions: [new Extension(`email not exists`, 'email')],
       });
@@ -60,11 +60,12 @@ export class UsersService {
       throw new DomainException({
         code: DomainExceptionCode.ValidationError,
         message: 'Validation failed',
-        extensions: [new Extension(`user already confirmed`, 'user')],
+        extensions: [new Extension(`user already confirmed`, 'email')],
       });
     }
     const confirmCode = uuidv4();
     userExist.setConfirmationCode(confirmCode);
+    await this.usersRepository.save(userExist);
 
     this.emailService
       .sendConfirmationEmail(userExist.email, confirmCode)

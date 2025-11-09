@@ -20,12 +20,18 @@ import { CreateBlogDto } from '../dto/create-blog.dto';
 import { CreatePostThroughBlogDto } from '../dto/create-post-through-blog.dto';
 import { PostsViewDto } from '../../posts/view-dto/posts.view-dto';
 import { GetPostsQueryParams } from '../../posts/api/input-dto/get-posts-query-params.input-dto';
+import { CreateBlogCommand } from '../application/usecases/create-blog.usecase';
+import { Types } from 'mongoose';
+import { GetBlogByIdQuery } from '../application/queries/get-blog-by-id.query-handler';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 
 @Controller('blogs')
 export class BlogsController {
   constructor(
     private blogsQueryRepository: BlogsQueryRepository,
     private blogsService: BlogsService,
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
   ) {}
 
   @Get()
@@ -60,10 +66,12 @@ export class BlogsController {
     type: BlogViewDto,
   })
   async createBlog(@Body() dto: CreateBlogDto): Promise<BlogViewDto> {
-    console.log('dtoBodyController::::::', dto);
-    const blogId = await this.blogsService.createBlog(dto);
+    const blogId = await this.commandBus.execute<
+      CreateBlogCommand,
+      Types.ObjectId
+    >(new CreateBlogCommand(dto));
 
-    return this.blogsQueryRepository.getByIdOrNotFoundFail(blogId);
+    return this.queryBus.execute(new GetBlogByIdQuery(blogId, null));
   }
 
   @Post(':id/posts')
