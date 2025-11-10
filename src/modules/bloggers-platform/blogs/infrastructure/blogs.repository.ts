@@ -12,9 +12,8 @@ export class BlogsRepository {
     await blogExist.save();
   }
 
-  async save(blog: Blog): Promise<BlogDocument> {
-    const createdBlog = new this.BlogModel(blog);
-    return createdBlog.save();
+  async save(blog: BlogDocument): Promise<BlogDocument> {
+    return blog.save(); // если это Mongoose-документ
   }
 
   async findOrNotFoundFail(id: string): Promise<BlogDocument> {

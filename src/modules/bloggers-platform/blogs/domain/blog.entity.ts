@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
 import { CreateBlogDomainDto } from './dto/create-blog.domain.dto';
 import { CreateBlogDto } from '../dto/create-blog.dto';
+import { UpdateBlogInputDto } from '../dto/update-blog.input-dto';
 
 @Schema({ timestamps: true })
 export class Blog {
@@ -38,12 +39,13 @@ export class Blog {
     });
   }
 
-  update(dto: CreateBlogDto): void {
-    this.name = dto.name;
-    this.description = dto.description;
-    this.websiteUrl = dto.websiteUrl;
+  update(dto: UpdateBlogInputDto): void {
+    // обновляем только то, что реально пришло
+    this.name = dto.name ?? this.name;
+    this.description = dto.description ?? this.description;
+    this.websiteUrl = dto.websiteUrl ?? this.websiteUrl;
+    this.updatedAt = new Date();
   }
-
   makeDeleted() {
     if (this.deletedAt !== null) {
       throw new Error('Entity already deleted');

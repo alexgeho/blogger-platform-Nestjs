@@ -9,6 +9,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { BlogsService } from '../application/blogs.service';
@@ -24,6 +25,9 @@ import { CreateBlogCommand } from '../application/usecases/create-blog.usecase';
 import { Types } from 'mongoose';
 import { GetBlogByIdQuery } from '../application/queries/get-blog-by-id.query-handler';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { BasicAuthGuard } from '../../../user-accounts/guards/basic/basic-auth.guard';
+import { UpdateBlogInputDto } from '../dto/update-blog.input-dto';
+import { UpdateBlogCommand } from '../application/usecases/update-blog.usecase';
 
 @Controller('blogs')
 export class BlogsController {
@@ -87,15 +91,15 @@ export class BlogsController {
     return this.blogsService.createPostThroughBlog(body, id);
   }
 
+  @UseGuards(BasicAuthGuard)
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateBlog(
-    @Param('id') id: string,
-    @Body() body: CreateBlogDto,
-  ): Promise<BlogViewDto> {
-    const blogId: string = await this.blogsService.updateBlog(id, body);
-
-    return this.blogsQueryRepository.getByIdOrNotFoundFail(blogId);
+    @Param('id') id: Types.ObjectId,
+    @Body() dto: UpdateBlogInputDto,
+  ) {
+    console.log('dto:::::', dto);
+    return this.commandBus.execute(new UpdateBlogCommand(id, dto));
   }
 
   @Delete(':id')
