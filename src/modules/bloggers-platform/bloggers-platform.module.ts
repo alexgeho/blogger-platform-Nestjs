@@ -16,6 +16,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { CreateBlogUseCase } from './blogs/application/usecases/create-blog.usecase';
 import { GetBlogByIdQueryHandler } from './blogs/application/queries/get-blog-by-id.query-handler';
 import { UpdateBlogUseCase } from './blogs/application/usecases/update-blog.usecase';
+import { DeleteBlogUseCase } from './blogs/application/usecases/delete-blog.usecase';
 
 //тут регистрируем провайдеры всех сущностей блоггерской платформы (blogs, posts, comments, etc...)
 @Module({
@@ -39,6 +40,7 @@ import { UpdateBlogUseCase } from './blogs/application/usecases/update-blog.usec
     // --- CQRS handlers ---
     CreateBlogUseCase,
     UpdateBlogUseCase,
+    DeleteBlogUseCase,
     GetBlogByIdQueryHandler,
   ],
   exports: [BlogsService],

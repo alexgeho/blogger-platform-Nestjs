@@ -11,7 +11,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiBasicAuth, ApiResponse } from '@nestjs/swagger';
 import { BlogsService } from '../application/blogs.service';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { BlogViewDto } from '../view-dto/blogs.view-dto';
@@ -28,6 +28,7 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { BasicAuthGuard } from '../../../user-accounts/guards/basic/basic-auth.guard';
 import { UpdateBlogInputDto } from '../dto/update-blog.input-dto';
 import { UpdateBlogCommand } from '../application/usecases/update-blog.usecase';
+import { DeleteBlogCommand } from '../application/usecases/delete-blog.usecase';
 
 @Controller('blogs')
 export class BlogsController {
@@ -102,9 +103,9 @@ export class BlogsController {
     return this.commandBus.execute(new UpdateBlogCommand(id, dto));
   }
 
+  @UseGuards(BasicAuthGuard)
   @Delete(':id')
-  @HttpCode(204)
-  async deleteBlog(@Param('id') id: string): Promise<void> {
-    await this.blogsService.deleteBlog(id);
+  async delete(@Param('id') id: Types.ObjectId) {
+    return this.commandBus.execute(new DeleteBlogCommand(id));
   }
 }
