@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsString, IsUrl } from 'class-validator';
 
 export class UpdateBlogInputDto {
   @IsString()
@@ -6,5 +6,6 @@ export class UpdateBlogInputDto {
   @IsString()
   description?: string;
   @IsString()
+  @IsUrl()
   websiteUrl?: string;
 }

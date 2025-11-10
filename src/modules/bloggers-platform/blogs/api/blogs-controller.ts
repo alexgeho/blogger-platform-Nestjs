@@ -64,6 +64,7 @@ export class BlogsController {
     return this.blogsService.getPostsOfBlog(id, query);
   }
 
+  @UseGuards(BasicAuthGuard)
   @Post()
   @ApiResponse({
     status: 201,
