@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog, BlogDocument } from '../domain/blog.entity';
 import type { BlogModelType } from '../domain/blog.entity';
@@ -16,13 +16,7 @@ export class BlogsRepository {
     return blog.save(); // если это Mongoose-документ
   }
 
-  async findOrNotFoundFail(id: string): Promise<BlogDocument> {
-    const blog = await this.BlogModel.findById(id);
-
-    if (!blog) {
-      throw new NotFoundException(`Blog with id ${id} not found`);
-    }
-
-    return blog;
+  async findById(id: string): Promise<BlogDocument | null> {
+    return this.BlogModel.findById(id);
   }
 }

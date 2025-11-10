@@ -105,6 +105,7 @@ export class BlogsController {
 
   @UseGuards(BasicAuthGuard)
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@Param('id') id: Types.ObjectId) {
     return this.commandBus.execute(new DeleteBlogCommand(id));
   }

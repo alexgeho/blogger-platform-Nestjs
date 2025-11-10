@@ -8,6 +8,8 @@ import { PostsRepository } from '../infrastructure/posts.repository';
 import { PostsViewDto } from '../view-dto/posts.view-dto';
 import { CreatePostThroughBlogDto } from '../../blogs/dto/create-post-through-blog.dto';
 import { BlogsRepository } from '../../blogs/infrastructure/blogs.repository';
+import { DomainException } from '../../../../core/exceptions/domain-exceptions';
+import { DomainExceptionCode } from '../../../../core/exceptions/domain-exception-codes';
 
 @Injectable()
 export class PostsService {
@@ -40,7 +42,7 @@ export class PostsService {
   }
 
   async createPost(dto: CreatePostDto): Promise<string> {
-    const blog = await this.blogsRepository.findOrNotFoundFail(dto.blogId);
+    const blog = await this.blogsRepository.findById(dto.blogId);
 
     if (!blog) {
       throw new NotFoundException(`Blog with id ${dto.blogId} not found`);
@@ -59,10 +61,13 @@ export class PostsService {
     dto: CreatePostThroughBlogDto,
     id: string,
   ): Promise<string> {
-    const blog = await this.blogsRepository.findOrNotFoundFail(id);
+    const blog = await this.blogsRepository.findById(id);
 
     if (!blog) {
-      throw new NotFoundException(`Blog with id ${id} not found`);
+      throw new DomainException({
+        code: DomainExceptionCode.NotFound,
+        message: `Blog with id ${id.toString()} not found`,
+      });
     }
 
     const domainDto = new CreatePostDomainDto(dto, id, blog.name);

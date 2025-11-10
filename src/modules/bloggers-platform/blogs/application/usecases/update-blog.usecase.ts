@@ -2,6 +2,8 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Types } from 'mongoose';
 import { BlogsRepository } from '../../infrastructure/blogs.repository';
 import { UpdateBlogInputDto } from '../../dto/update-blog.input-dto';
+import { DomainException } from '../../../../../core/exceptions/domain-exceptions';
+import { DomainExceptionCode } from '../../../../../core/exceptions/domain-exception-codes';
 
 export class UpdateBlogCommand {
   constructor(
@@ -18,24 +20,16 @@ export class UpdateBlogUseCase
 
   async execute({ id, dto }: UpdateBlogCommand): Promise<void> {
     // 1️⃣ Находим блог или выбрасываем исключение
-    const entity = await this.blogsRepository.findOrNotFoundFail(id.toString());
+    const entity = await this.blogsRepository.findById(id.toString());
 
-    console.log('Before update:', {
-      name: entity.name,
-      description: entity.description,
-      websiteUrl: entity.websiteUrl,
-    });
-
-    // 2️⃣ Обновляем данные через доменный метод
+    if (!entity) {
+      throw new DomainException({
+        code: DomainExceptionCode.NotFound,
+        message: `Blog with id ${id.toString()} not found`,
+      });
+    }
     entity.update(dto);
 
-    console.log('After update:', {
-      name: entity.name,
-      description: entity.description,
-      websiteUrl: entity.websiteUrl,
-    });
-
-    // 3️⃣ Сохраняем обновлённый документ
     await this.blogsRepository.save(entity);
   }
 }
