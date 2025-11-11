@@ -7,6 +7,14 @@ import type { PostModelType } from '../domain/post.entity';
 export class PostsRepository {
   constructor(@InjectModel(Post.name) private PostModel: PostModelType) {}
 
+  async updateLikeCounters(
+    id: string,
+    likesCount: number,
+    dislikesCount: number,
+  ): Promise<void> {
+    await this.PostModel.updateOne({ _id: id }, { likesCount, dislikesCount });
+  }
+
   async save(post: Post): Promise<PostDocument> {
     const createdPost = new this.PostModel(post);
     return createdPost.save();
