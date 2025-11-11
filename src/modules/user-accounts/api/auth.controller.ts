@@ -1,4 +1,12 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Res,
+} from '@nestjs/common';
+import { Response } from 'express';
 import { LoginDto } from '../dto/loginDto';
 import { AuthService } from '../application/auth.service';
 import { UsersService } from '../application/users.service';
@@ -12,16 +20,35 @@ export class AuthController {
     private authService: AuthService,
     private usersService: UsersService,
   ) {}
+
   @Post('login')
-  @HttpCode(200)
-  async login(@Body() dto: LoginDto): Promise<{ accessToken: string } | null> {
-    return await this.authService.login(dto);
+  @HttpCode(HttpStatus.OK)
+  async login(
+    @Body() dto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<{ accessToken: string }> {
+    // ⚙️ AuthService теперь возвращает оба токена
+    const { accessToken, refreshToken } = await this.authService.login(dto);
+
+    // 🍪 Устанавливаем refreshToken в httpOnly-cookie
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      path: '/auth/refresh-token',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 дней
+    });
+
+    // возвращаем accessToken в теле ответа
+    return { accessToken };
   }
+
   @Post('registration')
   @HttpCode(204)
   async registration(@Body() dto: CreateUserInputDto): Promise<void> {
     await this.usersService.registration(dto);
   }
+
   @Post('registration-email-resending')
   @HttpCode(204)
   async emailResending(@Body() dto: EmailResendDto): Promise<void> {

@@ -41,13 +41,13 @@ export class AuthService {
     return { id: user._id.toString() };
   }
 
-  async login(dto: LoginDto): Promise<{ accessToken: string } | null> {
-    const user: User | null =
-      await this.usersRepository.findByLoginOrEmail(dto);
-    console.log('user:', user);
+  async login(
+    dto: LoginDto,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    const user = await this.usersRepository.findByLoginOrEmail(dto);
+
     if (!user) {
       const field = dto.loginOrEmail.includes('@') ? 'email' : 'login';
-
       throw new DomainException({
         code: DomainExceptionCode.Unauthorized,
         message: 'User not found',
@@ -59,7 +59,7 @@ export class AuthService {
       password: dto.password,
       hash: user.passwordHash,
     });
-    console.log('isPasswordValid: ', isPasswordValid, '+');
+
     if (!isPasswordValid) {
       throw new DomainException({
         code: DomainExceptionCode.Unauthorized,
@@ -67,10 +67,21 @@ export class AuthService {
         extensions: [new Extension('Incorrect password', 'password')],
       });
     }
-    const accessToken = this.jwtService.sign(
-      { id: user._id },
-      { secret: process.env.JWT_SECRET },
-    );
-    return { accessToken };
+
+    const payload = { id: user._id.toString() };
+
+    // 🔹 короткий токен
+    const accessToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET || 'access-token-secret',
+      expiresIn: '5m',
+    });
+
+    // 🔹 долгий токен
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_REFRESH_SECRET || 'refresh-token-secret',
+      expiresIn: '7d',
+    });
+
+    return { accessToken, refreshToken };
   }
 }

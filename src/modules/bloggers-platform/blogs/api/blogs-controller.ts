@@ -100,7 +100,6 @@ export class BlogsController {
     @Param('id') id: Types.ObjectId,
     @Body() dto: UpdateBlogInputDto,
   ) {
-    console.log('dto:::::', dto);
     return this.commandBus.execute(new UpdateBlogCommand(id, dto));
   }
 
