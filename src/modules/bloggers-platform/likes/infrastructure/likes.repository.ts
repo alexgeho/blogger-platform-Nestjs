@@ -1,55 +1,65 @@
-import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Like, LikeDocument } from '../domain/like.entity';
 import { LikeStatus } from '../domain/like-status.enum';
 
 @Injectable()
 export class LikesRepository {
-  constructor(@InjectModel(Like.name) private LikeModel: Model<LikeDocument>) {}
+  constructor(
+    @InjectModel(Like.name) private readonly likeModel: Model<LikeDocument>,
+  ) {}
 
-  async findOne(parentId: string, userId: string, parentType: string) {
-    return this.LikeModel.findOne({ parentId, userId, parentType });
+  async findOne(
+    parentId: string,
+    userId: string,
+    parentType: 'Post' | 'Comment',
+  ) {
+    return this.likeModel.findOne({ parentId, userId, parentType });
   }
 
   async createLike(
     parentId: string,
     userId: string,
-    parentType: string,
+    parentType: 'Post' | 'Comment',
     status: LikeStatus,
-  ) {
-    const like = new this.LikeModel({
-      parentId,
-      parentType,
+  ): Promise<void> {
+    const like = new this.likeModel({
+      parentId, // ✅ обязательно
+      parentType, // ✅ "Post" или "Comment"
       userId,
       status,
       createdAt: new Date(),
     });
+
     await like.save();
-    return like;
   }
 
   async updateLike(
     parentId: string,
     userId: string,
-    parentType: string,
-    status: LikeStatus,
-  ) {
-    await this.LikeModel.updateOne(
+    parentType: 'Post' | 'Comment',
+    newStatus: LikeStatus,
+  ): Promise<void> {
+    await this.likeModel.updateOne(
       { parentId, userId, parentType },
-      { status },
+      { $set: { status: newStatus } },
     );
   }
 
-  async deleteLike(parentId: string, userId: string, parentType: string) {
-    await this.LikeModel.deleteOne({ parentId, userId, parentType });
+  async deleteLike(
+    parentId: string,
+    userId: string,
+    parentType: 'Post' | 'Comment',
+  ): Promise<void> {
+    await this.likeModel.deleteOne({ parentId, userId, parentType });
   }
 
   async countByStatus(
     parentId: string,
-    parentType: string,
+    parentType: 'Post' | 'Comment',
     status: LikeStatus,
   ): Promise<number> {
-    return this.LikeModel.countDocuments({ parentId, parentType, status });
+    return this.likeModel.countDocuments({ parentId, parentType, status });
   }
 }

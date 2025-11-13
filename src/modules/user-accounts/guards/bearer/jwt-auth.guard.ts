@@ -7,12 +7,12 @@ import { DomainExceptionCode } from '../../../../core/exceptions/domain-exceptio
 export class JwtAuthGuard extends AuthGuard('jwt') {
   handleRequest(err, user) {
     if (err || !user) {
-      // здесь можно выбросить любую свою ошибку
       throw new DomainException({
         code: DomainExceptionCode.Unauthorized,
         message: 'Unauthorized',
       });
     }
+    // Возвращаем user, который validate() вернул из JwtStrategy
     return user;
   }
 }

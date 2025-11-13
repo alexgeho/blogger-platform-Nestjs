@@ -17,6 +17,9 @@ import { CreateBlogUseCase } from './blogs/application/usecases/create-blog.usec
 import { GetBlogByIdQueryHandler } from './blogs/application/queries/get-blog-by-id.query-handler';
 import { UpdateBlogUseCase } from './blogs/application/usecases/update-blog.usecase';
 import { DeleteBlogUseCase } from './blogs/application/usecases/delete-blog.usecase';
+import { LikesService } from './likes/application/likes.service';
+import { LikesRepository } from './likes/infrastructure/likes.repository';
+import { Like, LikeSchema } from './likes/domain/like.entity';
 
 //тут регистрируем провайдеры всех сущностей блоггерской платформы (blogs, posts, comments, etc...)
 @Module({
@@ -26,6 +29,7 @@ import { DeleteBlogUseCase } from './blogs/application/usecases/delete-blog.usec
     MongooseModule.forFeature([
       { name: Blog.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
+      { name: Like.name, schema: LikeSchema },
     ]),
     NotificationsModule,
   ],
@@ -37,6 +41,8 @@ import { DeleteBlogUseCase } from './blogs/application/usecases/delete-blog.usec
     PostsService,
     PostsRepository,
     PostsQueryRepository,
+    LikesService,
+    LikesRepository,
     // --- CQRS handlers ---
     CreateBlogUseCase,
     UpdateBlogUseCase,

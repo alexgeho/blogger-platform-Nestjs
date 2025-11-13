@@ -17,14 +17,19 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CONFIG_KEYS } from '../../config/config-keys';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './guards/bearer/jwt.strategy';
+import { JwtAuthGuard } from './guards/bearer/jwt-auth.guard';
+
 @Module({
   imports: [
     ConfigModule,
+    // ✅ Passport регистрируется отдельно, не внутри JwtModule
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        // secret: configService.get<string>(process.env.JWT_SECRET),
         secret: configService.get<string>(CONFIG_KEYS.JWT_SECRET),
         signOptions: { expiresIn: '5m' },
       }),
@@ -44,7 +49,16 @@ import { NotificationsModule } from '../notifications/notifications.module';
     AuthQueryRepository,
     UsersExternalQueryRepository,
     UsersExternalService,
+    JwtStrategy, // ✅ стратегия
+    JwtAuthGuard, // ✅ guard
   ],
-  exports: [UsersExternalQueryRepository, UsersExternalService],
+  exports: [
+    UsersExternalQueryRepository,
+    UsersExternalService,
+    PassportModule,
+    JwtModule,
+    JwtStrategy,
+    JwtAuthGuard,
+  ],
 })
 export class UserAccountsModule {}

@@ -70,7 +70,6 @@ export class AuthService {
 
     const payload = { id: user._id.toString() };
 
-    // 🔹 короткий токен
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET || 'access-token-secret',
       expiresIn: '5m',

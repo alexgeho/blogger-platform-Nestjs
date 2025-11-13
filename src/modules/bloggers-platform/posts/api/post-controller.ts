@@ -9,6 +9,8 @@ import {
   Post,
   Put,
   Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
@@ -17,13 +19,37 @@ import { CreatePostDto } from '../dto/create-post.dto';
 import { PostsQueryRepository } from '../infrastructure/query/posts.query-repository';
 import { PostsViewDto } from '../view-dto/posts.view-dto';
 import { PostsService } from '../application/posts.service';
+import { JwtAuthGuard } from '../../../user-accounts/guards/bearer/jwt-auth.guard';
+import { LikeStatusInputDto } from '../../likes/dto/like-status.input-dto.ts';
+import { LikesService } from '../../likes/application/likes.service';
 
 @Controller('posts')
 export class PostController {
   constructor(
     private postsQueryRepository: PostsQueryRepository,
     private postsService: PostsService,
+    private likesService: LikesService,
   ) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Put(':id/like-status')
+  @HttpCode(204)
+  async likePost(
+    @Param('id') parentId: string,
+    @Body() dto: LikeStatusInputDto,
+    @Req() req: { user: { userId: string } },
+  ): Promise<void> {
+    const userId = req.user.userId;
+    console.log('parentIdController::::', parentId);
+    console.log('userId::::', userId);
+    console.log('likeStatus:::: ', dto.likeStatus);
+    await this.likesService.setLikeStatus(
+      parentId,
+      userId,
+      'Post',
+      dto.likeStatus,
+    );
+  }
 
   // @Post(':id/comments')
   // @ApiResponse({
