@@ -21,7 +21,6 @@ export class LikesService {
       userId,
       parentType,
     );
-    console.log('parentId::::::', parentId);
     // 1️⃣ — Если лайка нет и статус не None → создаём
     if (!existingLike) {
       if (newStatus === LikeStatus.None) return;

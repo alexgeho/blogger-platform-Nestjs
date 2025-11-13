@@ -22,6 +22,7 @@ import { PostsService } from '../application/posts.service';
 import { JwtAuthGuard } from '../../../user-accounts/guards/bearer/jwt-auth.guard';
 import { LikeStatusInputDto } from '../../likes/dto/like-status.input-dto.ts';
 import { LikesService } from '../../likes/application/likes.service';
+import { JwtOptionalAuthGuard } from '../../../user-accounts/guards/bearer/jwt-optional-auth.guard';
 
 @Controller('posts')
 export class PostController {
@@ -40,9 +41,6 @@ export class PostController {
     @Req() req: { user: { userId: string } },
   ): Promise<void> {
     const userId = req.user.userId;
-    console.log('parentIdController::::', parentId);
-    console.log('userId::::', userId);
-    console.log('likeStatus:::: ', dto.likeStatus);
     await this.likesService.setLikeStatus(
       parentId,
       userId,
@@ -72,9 +70,14 @@ export class PostController {
     return this.postsQueryRepository.getAll(query);
   }
 
+  @UseGuards(JwtOptionalAuthGuard)
   @Get(':id')
-  async getById(@Param('id') id: string): Promise<PostsViewDto> {
-    return this.postsQueryRepository.getByIdOrNotFoundFail(id);
+  async getById(
+    @Param('id') id: string,
+    @Req() req: { user?: { userId: string } },
+  ): Promise<PostsViewDto> {
+    const userId = req.user?.userId ?? null;
+    return this.postsQueryRepository.getByIdOrNotFoundFail(id, userId);
   }
 
   @Delete(':id')

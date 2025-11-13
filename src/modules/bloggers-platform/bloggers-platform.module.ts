@@ -20,6 +20,7 @@ import { DeleteBlogUseCase } from './blogs/application/usecases/delete-blog.usec
 import { LikesService } from './likes/application/likes.service';
 import { LikesRepository } from './likes/infrastructure/likes.repository';
 import { Like, LikeSchema } from './likes/domain/like.entity';
+import { JwtOptionalAuthGuard } from '../user-accounts/guards/bearer/jwt-optional-auth.guard';
 
 //тут регистрируем провайдеры всех сущностей блоггерской платформы (blogs, posts, comments, etc...)
 @Module({
@@ -43,6 +44,7 @@ import { Like, LikeSchema } from './likes/domain/like.entity';
     PostsQueryRepository,
     LikesService,
     LikesRepository,
+    JwtOptionalAuthGuard,
     // --- CQRS handlers ---
     CreateBlogUseCase,
     UpdateBlogUseCase,

@@ -43,7 +43,10 @@ export class PostsQueryRepository {
     });
   }
 
-  async getByIdOrNotFoundFail(id: string): Promise<PostsViewDto> {
+  async getByIdOrNotFoundFail(
+    id: string,
+    userId: string | null,
+  ): Promise<PostsViewDto> {
     const post = await this.PostModel.findOne({
       _id: id,
       deletedAt: null,
