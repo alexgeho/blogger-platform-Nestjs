@@ -1,17 +1,10 @@
-import { Types } from 'mongoose';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { PostsViewDto } from '../../view-dto/posts.view-dto';
 import { PostsQueryRepository } from '../../infrastructure/query/posts.query-repository';
 import { Inject } from '@nestjs/common';
 import { UsersExternalQueryRepository } from '../../../../user-accounts/infrastructure/external-query/users.external-query-repository';
 import { PostsRepository } from '../../infrastructure/posts.repository';
-
-export class GetPostByIdQuery {
-  constructor(
-    public id: Types.ObjectId,
-    public userId: Types.ObjectId | null,
-  ) {}
-}
+import { GetPostByIdQuery } from './get-post-by-id.query';
 
 @QueryHandler(GetPostByIdQuery)
 export class GetPostByIdQueryHandler
@@ -25,6 +18,7 @@ export class GetPostByIdQueryHandler
   ) {}
 
   async execute(query: GetPostByIdQuery): Promise<PostsViewDto> {
+    console.log('queryPostById::::::', query.id.toString());
     return this.postsQueryRepository.getByIdOrNotFoundFail(query.id.toString());
   }
 }

@@ -17,6 +17,7 @@ export class BlogsRepository {
   }
 
   async findById(id: string): Promise<BlogDocument | null> {
+    console.log('idRepository::::::', id);
     return this.BlogModel.findById(id);
   }
 }

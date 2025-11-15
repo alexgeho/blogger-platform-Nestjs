@@ -26,6 +26,7 @@ import { JwtOptionalAuthGuard } from '../../../user-accounts/guards/bearer/jwt-o
 import { CreatePostCommand } from '../application/usecases/create-post.usecase';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Types } from 'mongoose';
+import { GetPostByIdQuery } from '../application/queries/get-post-by-id.query';
 
 @Controller('posts')
 export class PostController {
@@ -101,17 +102,11 @@ export class PostController {
   }
 
   @Post()
-  @ApiResponse({
-    status: 201,
-    description: 'Returns the newly created post',
-    type: PostsViewDto,
-  })
   async createPost(@Body() dto: CreatePostDto): Promise<PostsViewDto> {
-    const postId = await this.commandBus.execute<
-      CreatePostCommand,
-      Types.ObjectId
-    >(new CreatePostCommand(dto));
+    const postId = await this.commandBus.execute<CreatePostCommand, string>(
+      new CreatePostCommand(dto),
+    );
 
-    return this.queryBus.execute(postId);
+    return this.queryBus.execute(new GetPostByIdQuery(postId, null));
   }
 }

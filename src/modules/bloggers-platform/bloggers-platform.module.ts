@@ -21,6 +21,8 @@ import { LikesService } from './likes/application/likes.service';
 import { LikesRepository } from './likes/infrastructure/likes.repository';
 import { Like, LikeSchema } from './likes/domain/like.entity';
 import { JwtOptionalAuthGuard } from '../user-accounts/guards/bearer/jwt-optional-auth.guard';
+import { CreatePostUseCase } from './posts/application/usecases/create-post.usecase';
+import { GetPostByIdQueryHandler } from './posts/application/queries/get-post-by-id.query-handler';
 
 //тут регистрируем провайдеры всех сущностей блоггерской платформы (blogs, posts, comments, etc...)
 @Module({
@@ -46,6 +48,8 @@ import { JwtOptionalAuthGuard } from '../user-accounts/guards/bearer/jwt-optiona
     LikesRepository,
     JwtOptionalAuthGuard,
     // --- CQRS handlers ---
+    CreatePostUseCase,
+    GetPostByIdQueryHandler,
     CreateBlogUseCase,
     UpdateBlogUseCase,
     DeleteBlogUseCase,
