@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { LikesRepository } from '../infrastructure/likes.repository';
 import { LikeStatus } from '../domain/like-status.enum';
+import { UsersRepository } from '../../../user-accounts/infrastructure/user.repository';
 
 @Injectable()
 export class LikesService {
-  constructor(private readonly likesRepo: LikesRepository) {}
+  constructor(
+    private readonly likesRepo: LikesRepository,
+    private readonly usersRepo: UsersRepository, // <-- добавили
+  ) {}
 
   async getExtendedLikesInfo(
     parentId: string,
@@ -26,10 +30,20 @@ export class LikesService {
       parentType,
     );
 
+    // достаем ВСЕ userIds
+    const userIds = newestLikesRaw.map((l) => l.userId);
+
+    // получаем документы пользователей
+    const users = await this.usersRepo.findUsersByIds(userIds);
+
+    // создаем Map для быстрого доступа
+    const loginMap = new Map(users.map((u) => [u._id.toString(), u.login]));
+
+    // финальный мап
     const newestLikes = newestLikesRaw.map((like) => ({
       addedAt: like.createdAt,
       userId: like.userId,
-      login: 'temp',
+      login: loginMap.get(like.userId) ?? 'Unknown',
     }));
 
     return {

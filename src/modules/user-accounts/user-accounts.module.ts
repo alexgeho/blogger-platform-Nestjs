@@ -59,6 +59,7 @@ import { JwtAuthGuard } from './guards/bearer/jwt-auth.guard';
     JwtModule,
     JwtStrategy,
     JwtAuthGuard,
+    UsersRepository,
   ],
 })
 export class UserAccountsModule {}

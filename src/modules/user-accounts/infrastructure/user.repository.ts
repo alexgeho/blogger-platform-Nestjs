@@ -12,6 +12,12 @@ export class UsersRepository {
   //инжектирование модели через DI
   constructor(@InjectModel(User.name) private UserModel: UserModelType) {}
 
+  async findUsersByIds(ids: string[]) {
+    return this.UserModel.find({ _id: { $in: ids } })
+      .select({ login: 1 }) // можно вернуть только login и id
+      .lean();
+  }
+
   async findUserByCode(code: string) {
     return await this.UserModel.findOne({ confirmationCode: code });
   }
