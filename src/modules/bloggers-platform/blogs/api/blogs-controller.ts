@@ -30,7 +30,6 @@ import { BasicAuthGuard } from '../../../user-accounts/guards/basic/basic-auth.g
 import { UpdateBlogInputDto } from '../dto/update-blog.input-dto';
 import { UpdateBlogCommand } from '../application/usecases/update-blog.usecase';
 import { DeleteBlogCommand } from '../application/usecases/delete-blog.usecase';
-import { JwtOptionalAuthGuard } from '../../../user-accounts/guards/bearer/jwt-optional-auth.guard';
 
 @Controller('blogs')
 export class BlogsController {

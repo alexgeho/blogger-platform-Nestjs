@@ -23,6 +23,9 @@ import { JwtAuthGuard } from '../../../user-accounts/guards/bearer/jwt-auth.guar
 import { LikeStatusInputDto } from '../../likes/dto/like-status.input-dto.ts';
 import { LikesService } from '../../likes/application/likes.service';
 import { JwtOptionalAuthGuard } from '../../../user-accounts/guards/bearer/jwt-optional-auth.guard';
+import { CreatePostCommand } from '../application/usecases/create-post.usecase';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { Types } from 'mongoose';
 
 @Controller('posts')
 export class PostController {
@@ -30,6 +33,8 @@ export class PostController {
     private postsQueryRepository: PostsQueryRepository,
     private postsService: PostsService,
     private likesService: LikesService,
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -101,9 +106,12 @@ export class PostController {
     description: 'Returns the newly created post',
     type: PostsViewDto,
   })
-  async createPost(@Body() body: CreatePostDto): Promise<PostsViewDto> {
-    const postId = await this.postsService.createPost(body);
+  async createPost(@Body() dto: CreatePostDto): Promise<PostsViewDto> {
+    const postId = await this.commandBus.execute<
+      CreatePostCommand,
+      Types.ObjectId
+    >(new CreatePostCommand(dto));
 
-    return this.postsQueryRepository.getByIdOrNotFoundFail(postId);
+    return this.queryBus.execute(postId);
   }
 }
