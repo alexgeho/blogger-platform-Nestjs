@@ -12,7 +12,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiResponse } from '@nestjs/swagger';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { GetPostsQueryParams } from './input-dto/get-posts-query-params.input-dto';
 import { CreatePostDto } from '../dto/create-post.dto';
@@ -73,11 +73,11 @@ export class PostController {
   @UseGuards(JwtOptionalAuthGuard)
   @Get(':id')
   async getById(
-    @Param('id') id: string,
+    @Param('id') postId: string,
     @Req() req: { user?: { userId: string } },
   ): Promise<PostsViewDto> {
     const userId = req.user?.userId ?? null;
-    return this.postsQueryRepository.getByIdOrNotFoundFail(id, userId);
+    return this.postsService.getPostById(postId, userId);
   }
 
   @Delete(':id')

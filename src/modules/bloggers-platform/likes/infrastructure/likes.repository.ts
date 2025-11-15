@@ -25,8 +25,8 @@ export class LikesRepository {
     status: LikeStatus,
   ): Promise<void> {
     const like = new this.likeModel({
-      parentId, // ✅ обязательно
-      parentType, // ✅ "Post" или "Comment"
+      parentId,
+      parentType,
       userId,
       status,
       createdAt: new Date(),
@@ -55,11 +55,49 @@ export class LikesRepository {
     await this.likeModel.deleteOne({ parentId, userId, parentType });
   }
 
-  async countByStatus(
+  // ============================
+  // 🔥  New required methods
+  // ============================
+
+  async countLikes(parentId: string, parentType: 'Post' | 'Comment') {
+    return this.likeModel.countDocuments({
+      parentId,
+      parentType,
+      status: LikeStatus.Like,
+    });
+  }
+
+  async countDislikes(parentId: string, parentType: 'Post' | 'Comment') {
+    return this.likeModel.countDocuments({
+      parentId,
+      parentType,
+      status: LikeStatus.Dislike,
+    });
+  }
+
+  async getMyStatus(
     parentId: string,
+    userId: string,
     parentType: 'Post' | 'Comment',
-    status: LikeStatus,
-  ): Promise<number> {
-    return this.likeModel.countDocuments({ parentId, parentType, status });
+  ): Promise<LikeStatus | 'None'> {
+    const like = await this.likeModel.findOne({
+      parentId,
+      parentType,
+      userId,
+    });
+
+    return like?.status ?? 'None';
+  }
+
+  async getNewestLikes(parentId: string, parentType: 'Post' | 'Comment') {
+    return this.likeModel
+      .find({
+        parentId,
+        parentType,
+        status: LikeStatus.Like,
+      })
+      .sort({ createdAt: -1 })
+      .limit(3)
+      .lean();
   }
 }

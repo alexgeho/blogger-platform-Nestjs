@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateBlogDto } from '../dto/create-blog.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import type { BlogModelType } from '../domain/blog.entity';
@@ -25,8 +25,6 @@ export class BlogsService {
   ) {}
 
   async deleteBlog(id: string): Promise<void> {
-    console.log('➡️ deleteBlog called with id:', id);
-
     const blogExist = await this.blogsRepository.findById(id);
 
     if (!blogExist) {
@@ -83,9 +81,9 @@ export class BlogsService {
 
   async createPostThroughBlog(
     body: CreatePostThroughBlogDto,
-    id: string,
+    blogId: string,
   ): Promise<PostsViewDto> {
-    const blog = await this.blogsRepository.findById(id);
+    const blog = await this.blogsRepository.findById(blogId);
     if (!blog) {
       throw new DomainException({
         code: DomainExceptionCode.NotFound,
@@ -95,12 +93,9 @@ export class BlogsService {
 
     const newPostId = await this.postsService.CreatePostThroughBlogDto(
       body,
-      id,
+      blogId,
     );
 
-    const postView =
-      await this.postsQueryRepository.getByIdOrNotFoundFail(newPostId);
-
-    return postView; // 👈 Вот это обязательный return!
+    return await this.postsQueryRepository.getByIdOrNotFoundFail(newPostId);
   }
 }

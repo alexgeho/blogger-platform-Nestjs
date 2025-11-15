@@ -8,11 +8,11 @@ export class CreatePostDomainDto {
   blogName: string;
   createdAt: Date;
 
-  constructor(dto: CreatePostThroughBlogDto, id: string, blogName: string) {
+  constructor(dto: CreatePostThroughBlogDto, blogId: string, blogName: string) {
     this.title = dto.title;
     this.shortDescription = dto.shortDescription;
     this.content = dto.content;
-    this.blogId = id;
+    this.blogId = blogId;
     this.blogName = blogName;
   }
 }

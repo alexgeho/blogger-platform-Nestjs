@@ -9,9 +9,10 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBasicAuth, ApiResponse } from '@nestjs/swagger';
+import { ApiResponse } from '@nestjs/swagger';
 import { BlogsService } from '../application/blogs.service';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { BlogViewDto } from '../view-dto/blogs.view-dto';
@@ -29,6 +30,7 @@ import { BasicAuthGuard } from '../../../user-accounts/guards/basic/basic-auth.g
 import { UpdateBlogInputDto } from '../dto/update-blog.input-dto';
 import { UpdateBlogCommand } from '../application/usecases/update-blog.usecase';
 import { DeleteBlogCommand } from '../application/usecases/delete-blog.usecase';
+import { JwtOptionalAuthGuard } from '../../../user-accounts/guards/bearer/jwt-optional-auth.guard';
 
 @Controller('blogs')
 export class BlogsController {
@@ -80,17 +82,18 @@ export class BlogsController {
     return this.queryBus.execute(new GetBlogByIdQuery(blogId, null));
   }
 
+  @UseGuards(BasicAuthGuard)
   @Post(':id/posts')
   @ApiResponse({
     status: 201,
     description: 'Returns the newly created post for blog',
-    type: PostsViewDto, // <-- тут магия
+    type: PostsViewDto,
   })
   async createPostThroughBlog(
-    @Param('id') id: string,
+    @Param('id') blogId: string,
     @Body() body: CreatePostThroughBlogDto,
   ): Promise<PostsViewDto> {
-    return this.blogsService.createPostThroughBlog(body, id);
+    return this.blogsService.createPostThroughBlog(body, blogId);
   }
 
   @UseGuards(BasicAuthGuard)

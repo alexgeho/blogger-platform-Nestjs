@@ -10,6 +10,7 @@ import { CreatePostThroughBlogDto } from '../../blogs/dto/create-post-through-bl
 import { BlogsRepository } from '../../blogs/infrastructure/blogs.repository';
 import { DomainException } from '../../../../core/exceptions/domain-exceptions';
 import { DomainExceptionCode } from '../../../../core/exceptions/domain-exception-codes';
+import { LikesService } from '../../likes/application/likes.service';
 
 @Injectable()
 export class PostsService {
@@ -18,7 +19,29 @@ export class PostsService {
     private PostModel: PostModelType,
     private postsRepository: PostsRepository,
     private blogsRepository: BlogsRepository,
+    private likesService: LikesService,
   ) {}
+
+  async getPostById(
+    postId: string,
+    userId: string | null,
+  ): Promise<PostsViewDto> {
+    const post = await this.postsRepository.findById(postId);
+    if (!post) {
+      throw new NotFoundException(`Post with id ${postId} not found`);
+    }
+
+    // 🔥 передаём parentType = 'Post'
+    const extendedLikesInfo = await this.likesService.getExtendedLikesInfo(
+      postId,
+      userId,
+      'Post',
+    );
+
+    post.extendedLikesInfo = extendedLikesInfo;
+
+    return PostsViewDto.mapToView(post);
+  }
 
   async deletePost(id: string): Promise<void> {
     const postExist = await this.postsRepository.findOrNotFoundFail(id);
@@ -45,7 +68,10 @@ export class PostsService {
     const blog = await this.blogsRepository.findById(dto.blogId);
 
     if (!blog) {
-      throw new NotFoundException(`Blog with id ${dto.blogId} not found`);
+      throw new DomainException({
+        code: DomainExceptionCode.NotFound,
+        message: `Blog with id ${dto.blogId.toString()} not found`,
+      });
     }
 
     const domainDto = new CreatePostDomainDto(dto, dto.blogId, blog.name);
@@ -59,18 +85,18 @@ export class PostsService {
 
   async CreatePostThroughBlogDto(
     dto: CreatePostThroughBlogDto,
-    id: string,
+    blogId: string,
   ): Promise<string> {
-    const blog = await this.blogsRepository.findById(id);
+    const blog = await this.blogsRepository.findById(blogId);
 
     if (!blog) {
       throw new DomainException({
         code: DomainExceptionCode.NotFound,
-        message: `Blog with id ${id.toString()} not found`,
+        message: `Blog with id ${blogId.toString()} not found`,
       });
     }
 
-    const domainDto = new CreatePostDomainDto(dto, id, blog.name);
+    const domainDto = new CreatePostDomainDto(dto, blogId, blog.name);
 
     const post = this.PostModel.createInstance(domainDto);
 
