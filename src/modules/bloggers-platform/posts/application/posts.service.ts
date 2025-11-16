@@ -28,7 +28,10 @@ export class PostsService {
   ): Promise<PostsViewDto> {
     const post = await this.postsRepository.findById(postId);
     if (!post) {
-      throw new NotFoundException(`Post with id ${postId} not found`);
+      throw new DomainException({
+        code: DomainExceptionCode.NotFound,
+        message: `Post with ${postId} not found`,
+      });
     }
 
     // 🔥 передаём parentType = 'Post'

@@ -2,12 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { LikesRepository } from '../infrastructure/likes.repository';
 import { LikeStatus } from '../domain/like-status.enum';
 import { UsersRepository } from '../../../user-accounts/infrastructure/user.repository';
+import { PostsRepository } from '../../posts/infrastructure/posts.repository';
+import { DomainException } from '../../../../core/exceptions/domain-exceptions';
+import { DomainExceptionCode } from '../../../../core/exceptions/domain-exception-codes';
 
 @Injectable()
 export class LikesService {
   constructor(
     private readonly likesRepo: LikesRepository,
-    private readonly usersRepo: UsersRepository, // <-- добавили
+    private readonly usersRepo: UsersRepository,
+    private readonly postsRepository: PostsRepository,
   ) {}
 
   async getExtendedLikesInfo(
@@ -60,6 +64,15 @@ export class LikesService {
     parentType: 'Post' | 'Comment',
     newStatus: LikeStatus,
   ): Promise<void> {
+    const post = await this.postsRepository.findById(parentId);
+
+    if (!post) {
+      throw new DomainException({
+        code: DomainExceptionCode.NotFound,
+        message: `Post with ${parentId} not found`,
+      });
+    }
+
     const existingLike = await this.likesRepo.findOne(
       parentId,
       userId,

@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
 import { CreatePostDomainDto } from './dto/create-post.domain.dto';
 import { CreatePostDto } from '../dto/create-post.dto';
+import { UpdatePostInputDto } from '../dto/update-post.input-dto';
 
 @Schema({ timestamps: true })
 export class Post {
@@ -65,11 +66,11 @@ export class Post {
     return post;
   }
 
-  update(dto: CreatePostDto): void {
-    this.title = dto.title;
-    this.shortDescription = dto.shortDescription;
-    this.content = dto.content;
-    this.blogId = dto.blogId;
+  update(dto: UpdatePostInputDto): void {
+    if (dto.title !== undefined) this.title = dto.title;
+    if (dto.shortDescription !== undefined)
+      this.shortDescription = dto.shortDescription;
+    if (dto.content !== undefined) this.content = dto.content;
   }
 
   makeDeleted() {

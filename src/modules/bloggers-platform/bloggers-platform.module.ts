@@ -23,6 +23,8 @@ import { Like, LikeSchema } from './likes/domain/like.entity';
 import { JwtOptionalAuthGuard } from '../user-accounts/guards/bearer/jwt-optional-auth.guard';
 import { CreatePostUseCase } from './posts/application/usecases/create-post.usecase';
 import { GetPostByIdQueryHandler } from './posts/application/queries/get-post-by-id.query-handler';
+import { DeletePostUseCase } from './posts/application/usecases/delete-post.usecase';
+import { UpdatePostUseCase } from './posts/application/usecases/update-post.usecase';
 
 //тут регистрируем провайдеры всех сущностей блоггерской платформы (blogs, posts, comments, etc...)
 @Module({
@@ -50,6 +52,8 @@ import { GetPostByIdQueryHandler } from './posts/application/queries/get-post-by
     // --- CQRS handlers ---
     CreatePostUseCase,
     GetPostByIdQueryHandler,
+    DeletePostUseCase,
+    UpdatePostUseCase,
     CreateBlogUseCase,
     UpdateBlogUseCase,
     DeleteBlogUseCase,

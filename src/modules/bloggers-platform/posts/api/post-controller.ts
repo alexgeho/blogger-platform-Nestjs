@@ -27,6 +27,11 @@ import { CreatePostCommand } from '../application/usecases/create-post.usecase';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Types } from 'mongoose';
 import { GetPostByIdQuery } from '../application/queries/get-post-by-id.query';
+import { DeletePostCommand } from '../application/usecases/delete-post.usecase';
+import { UpdateBlogCommand } from '../../blogs/application/usecases/update-blog.usecase';
+import { UpdatePostInputDto } from '../dto/update-post.input-dto';
+import { UpdatePostCommand } from '../application/usecases/update-post.usecase';
+import { BasicAuthGuard } from '../../../user-accounts/guards/basic/basic-auth.guard';
 
 @Controller('posts')
 export class PostController {
@@ -89,16 +94,17 @@ export class PostController {
   @Delete(':id')
   @HttpCode(204)
   async deletePost(@Param('id') id: string): Promise<void> {
-    await this.postsService.deletePost(id);
+    await this.commandBus.execute(new DeletePostCommand(id));
   }
 
+  @UseGuards(BasicAuthGuard)
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async putPost(
     @Param('id') id: string,
-    @Body() body: CreatePostDto,
+    @Body() dto: UpdatePostInputDto,
   ): Promise<PostsViewDto> {
-    return this.postsService.updatePost(id, body);
+    return this.commandBus.execute(new UpdatePostCommand(id, dto));
   }
 
   @Post()
