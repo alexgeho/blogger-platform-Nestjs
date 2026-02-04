@@ -97,7 +97,7 @@ export class PostController {
     await this.commandBus.execute(new DeletePostCommand(id));
   }
 
-  @UseGuards(BasicAuthGuard)
+  // @UseGuards(BasicAuthGuard)
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async putPost(

@@ -1,7 +1,7 @@
 export const postConstraints = {
   title: {
     minLength: 3,
-    maxLength: 15,
+    maxLength: 55,
   },
   shortDescription: {
     minLength: 1,
