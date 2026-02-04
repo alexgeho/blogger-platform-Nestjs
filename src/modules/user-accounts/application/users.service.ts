@@ -74,7 +74,7 @@ export class UsersService {
 
   async createUser(dto: CreateUserDto): Promise<string> {
     const existingUser = await this.usersRepository.findByCreateUserDto(dto);
-    console.log('existingUser:::::::::::', existingUser);
+
     if (existingUser) {
       const field = existingUser.email === dto.email ? 'email' : 'login';
       throw new DomainException({

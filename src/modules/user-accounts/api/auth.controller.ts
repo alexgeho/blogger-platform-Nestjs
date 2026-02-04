@@ -1,10 +1,13 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
   Res,
+  Req,
+  UseGuards
 } from '@nestjs/common';
 import { Response } from 'express';
 import { LoginDto } from '../dto/loginDto';
@@ -13,12 +16,17 @@ import { UsersService } from '../application/users.service';
 import { CreateUserInputDto } from './input-dto/users.input-dto';
 import { EmailResendDto } from './input-dto/email-resend.dto';
 import { ConfirmationCode } from './input-dto/confirmation-code';
+import { UsersQueryRepository } from '../infrastructure/query/users.query-repository';
+import { JwtAuthGuard } from '../guards/bearer/jwt-auth.guard';
+
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private authService: AuthService,
     private usersService: UsersService,
+    private usersQueryRepository: UsersQueryRepository,
+
   ) {}
 
   @Post('login')
@@ -41,7 +49,16 @@ export class AuthController {
 
     // возвращаем accessToken в теле ответа
     return { accessToken };
+    
   }
+  
+@Get('me')
+@UseGuards(JwtAuthGuard)
+async me(@Req() req) {
+  return this.usersQueryRepository.getByIdOrNotFoundFail(
+    req.user.userId,
+  );
+}
 
   @Post('registration')
   @HttpCode(204)
