@@ -1,7 +1,7 @@
 export const blogConstraints = {
   name: {
     minLength: 3,
-    maxLength: 15,
+    maxLength: 25,
   },
   description: {
     minLength: 1,
