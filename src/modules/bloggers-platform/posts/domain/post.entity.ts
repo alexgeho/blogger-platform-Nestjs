@@ -73,10 +73,9 @@ export class Post {
     if (dto.content !== undefined) this.content = dto.content;
   }
 
+  /** Помечает пост удалённым (soft delete). Повторный вызов — идемпотентен, ошибку не бросаем. */
   makeDeleted() {
-    if (this.deletedAt !== null) {
-      throw new Error('Deleted');
-    }
+    if (this.deletedAt !== null) return;
     this.deletedAt = new Date();
   }
 }
