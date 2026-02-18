@@ -20,6 +20,11 @@ import { DeleteBlogUseCase } from './blogs/application/usecases/delete-blog.usec
 import { LikesService } from './likes/application/likes.service';
 import { LikesRepository } from './likes/infrastructure/likes.repository';
 import { Like, LikeSchema } from './likes/domain/like.entity';
+import { Comment, CommentSchema } from './post-comments/domain/comment.entity';
+import { CommentsRepository } from './post-comments/infrastructure/comments.repository';
+import { CommentsQueryRepository } from './post-comments/infrastructure/query/comments.query-repository';
+import { CommentsService } from './post-comments/application/comments.service';
+import { CommentsController } from './post-comments/api/comments.controller';
 import { JwtOptionalAuthGuard } from '../user-accounts/guards/bearer/jwt-optional-auth.guard';
 import { CreatePostUseCase } from './posts/application/usecases/create-post.usecase';
 import { GetPostByIdQueryHandler } from './posts/application/queries/get-post-by-id.query-handler';
@@ -35,10 +40,11 @@ import { UpdatePostUseCase } from './posts/application/usecases/update-post.usec
       { name: Blog.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
       { name: Like.name, schema: LikeSchema },
+      { name: Comment.name, schema: CommentSchema },
     ]),
     NotificationsModule,
   ],
-  controllers: [BlogsController, PostController],
+  controllers: [BlogsController, PostController, CommentsController],
   providers: [
     BlogsService,
     BlogsRepository,
@@ -46,6 +52,9 @@ import { UpdatePostUseCase } from './posts/application/usecases/update-post.usec
     PostsService,
     PostsRepository,
     PostsQueryRepository,
+    CommentsService,
+    CommentsRepository,
+    CommentsQueryRepository,
     LikesService,
     LikesRepository,
     JwtOptionalAuthGuard,

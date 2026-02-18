@@ -32,6 +32,9 @@ import { UpdateBlogCommand } from '../../blogs/application/usecases/update-blog.
 import { UpdatePostInputDto } from '../dto/update-post.input-dto';
 import { UpdatePostCommand } from '../application/usecases/update-post.usecase';
 import { BasicAuthGuard } from '../../../user-accounts/guards/basic/basic-auth.guard';
+import { CommentsService } from '../../post-comments/application/comments.service';
+import { CreateCommentDto } from '../../post-comments/dto/create-comment.dto';
+import { GetCommentsQueryParams } from '../../post-comments/api/input-dto/get-comments-query-params.input-dto';
 
 @Controller('posts')
 export class PostController {
@@ -39,6 +42,7 @@ export class PostController {
     private postsQueryRepository: PostsQueryRepository,
     private postsService: PostsService,
     private likesService: LikesService,
+    private readonly commentsService: CommentsService,
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
   ) {}
@@ -60,25 +64,33 @@ export class PostController {
     );
   }
 
-  // @Post(':id/comments')
-  // @ApiResponse({
-  //   status: 201,
-  //   description: 'Returns the newly created post',
-  //   type: PostsViewDto,
-  // })
-  // async createComment(
-  //   @Body() body: CreateCommentDto,
-  //   @Param('id') id: string,
-  // ): Promise<PostsViewDto> {
-  //   const postId = await this.postsService.createComment(body);
-  //   return this.postsQueryRepository.getByIdOrNotFoundFail(postId);
-  // }
-
   @Get()
   async getAll(
     @Query() query: GetPostsQueryParams,
   ): Promise<PaginatedViewDto<PostsViewDto[]>> {
     return this.postsQueryRepository.getAll(query);
+  }
+
+  @UseGuards(JwtOptionalAuthGuard)
+  @Get(':id/comments')
+  async getComments(
+    @Param('id') postId: string,
+    @Query() query: GetCommentsQueryParams,
+    @Req() req: { user?: { userId: string } },
+  ) {
+    const userId = req.user?.userId ?? null;
+    return this.commentsService.getByPostId(postId, query, userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/comments')
+  @HttpCode(HttpStatus.CREATED)
+  async createComment(
+    @Param('id') postId: string,
+    @Body() dto: CreateCommentDto,
+    @Req() req: { user: { userId: string } },
+  ) {
+    return this.commentsService.create(postId, dto, req.user.userId);
   }
 
   @UseGuards(JwtOptionalAuthGuard)
