@@ -35,30 +35,29 @@ export class AuthController {
     @Body() dto: LoginDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<{ accessToken: string }> {
-    // ⚙️ AuthService теперь возвращает оба токена
+    // AuthService now returns both tokens
     const { accessToken, refreshToken } = await this.authService.login(dto);
 
-    // 🍪 Устанавливаем refreshToken в httpOnly-cookie
+    // Set refreshToken as httpOnly cookie
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',
       path: '/auth/refresh-token',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 дней
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    // возвращаем accessToken в теле ответа
+    // Return accessToken in response body
     return { accessToken };
-    
   }
-  
-@Get('me')
-@UseGuards(JwtAuthGuard)
-async me(@Req() req) {
-  return this.usersQueryRepository.getByIdOrNotFoundFail(
-    req.user.userId,
-  );
-}
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  async me(@Req() req) {
+    return this.usersQueryRepository.getByIdOrNotFoundFail(
+      req.user.userId,
+    );
+  }
 
   @Post('registration')
   @HttpCode(204)
